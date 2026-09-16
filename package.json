@@ -47,7 +47,7 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "build:js": "bun build ./src/index.ts --outdir ./dist --external react --external react-native",
+    "build:js": "bun build ./src/index.ts ./src/hooks/index.ts ./src/utils/index.ts ./src/types/index.ts ./src/components/index.ts --outdir ./dist --external react --external react-native",
     "build:types": "tsc --declaration --emitDeclarationOnly --outDir ./dist",
     "build": "bun run build:js && bun run build:types",
     "test": "bun test",
