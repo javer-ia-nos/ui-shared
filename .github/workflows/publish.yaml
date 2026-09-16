@@ -21,6 +21,11 @@ jobs:
           bun install
           bun run build
 
-      - name: Publicar en GitHub Packages usando Bun
+      - name: Configurar autenticación para GitHub Packages
         run: |
-          bun publish --registry https://npm.pkg.github.com --token ${{ secrets.GITHUB_TOKEN }}
+          echo "@javer-ia-nos:registry=https://npm.pkg.github.com" >> ~/.npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
+
+      - name: Publicar en GitHub Packages
+        run: |
+          bun publish --registry https://npm.pkg.github.com
