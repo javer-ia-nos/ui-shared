@@ -96,3 +96,4 @@ bun install        # Instalar dependencias locales
 bun test           # Ejecutar suite de pruebas unitarias
 bun run typecheck  # Comprobación de TypeScript estricto
 ```
+
