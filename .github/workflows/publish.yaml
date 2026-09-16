@@ -1,0 +1,26 @@
+name: Publicar con Bun en GitHub Packages
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Instalar dependencias y compilar
+        run: |
+          bun install
+          bun run build
+
+      - name: Publicar en GitHub Packages usando Bun
+        run: |
+          bun publish --registry https://npm.pkg.github.com --token ${{ secrets.GITHUB_TOKEN }}
