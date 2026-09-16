@@ -28,4 +28,4 @@ jobs:
 
       - name: Publicar en GitHub Packages
         run: |
-          bun publish --registry https://npm.pkg.github.com
+          bun publish --registry https://npm.pkg.github.com --tolerate-republish
