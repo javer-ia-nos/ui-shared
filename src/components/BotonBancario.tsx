@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, Text, StyleSheet, type GestureResponderEvent } from "react-native";
+import { Pressable, Text, type GestureResponderEvent } from "react-native";
 
 export interface BotonBancarioProps {
   titulo: string;
@@ -9,9 +9,15 @@ export interface BotonBancarioProps {
   accessibilityLabel?: string;
 }
 
+const CLASES_VARIANTE: Record<NonNullable<BotonBancarioProps["variante"]>, { base: string; texto: string }> = {
+  primario: { base: "bg-secondary-container", texto: "text-on-secondary-container" },
+  secundario: { base: "bg-surface-container-high border border-outline-variant", texto: "text-on-surface" },
+  peligro: { base: "bg-error", texto: "text-on-error" },
+};
+
 /**
- * Botón bancario universal construido sobre primitivas de React Native
- * compatible directamente con react-native-web sin tocar el DOM.
+ * Botón bancario universal construido sobre primitivas de React Native, con el
+ * tema Material Design 3 (oscuro) del mockup de Stitch vía NativeWind.
  */
 export function BotonBancario({
   titulo,
@@ -20,6 +26,7 @@ export function BotonBancario({
   variante = "primario",
   accessibilityLabel,
 }: BotonBancarioProps) {
+  const clases = CLASES_VARIANTE[variante];
   return (
     <Pressable
       onPress={onPress}
@@ -27,66 +34,11 @@ export function BotonBancario({
       accessible={true}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel || titulo}
-      style={({ pressed }) => [
-        styles.base,
-        variante === "primario" && styles.primario,
-        variante === "secundario" && styles.secundario,
-        variante === "peligro" && styles.peligro,
-        pressed && styles.presionado,
-        disabled && styles.deshabilitado,
-      ]}
+      className={`py-3 px-5 rounded-2xl items-center justify-center min-h-12 active:opacity-85 ${clases.base} ${
+        disabled ? "opacity-40" : ""
+      }`}
     >
-      <Text
-        style={[
-          styles.textoBase,
-          variante === "secundario" ? styles.textoSecundario : styles.textoBlanco,
-          disabled && styles.textoDeshabilitado,
-        ]}
-      >
-        {titulo}
-      </Text>
+      <Text className={`font-headline-sm text-headline-sm ${clases.texto}`}>{titulo}</Text>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  base: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: 48,
-  },
-  primario: {
-    backgroundColor: "#004884",
-  },
-  secundario: {
-    backgroundColor: "#e8eff7",
-    borderWidth: 1,
-    borderColor: "#004884",
-  },
-  peligro: {
-    backgroundColor: "#d32f2f",
-  },
-  presionado: {
-    opacity: 0.85,
-  },
-  deshabilitado: {
-    backgroundColor: "#cccccc",
-    borderColor: "#cccccc",
-  },
-  textoBase: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  textoBlanco: {
-    color: "#ffffff",
-  },
-  textoSecundario: {
-    color: "#004884",
-  },
-  textoDeshabilitado: {
-    color: "#666666",
-  },
-});

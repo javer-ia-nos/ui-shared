@@ -1,0 +1,2545 @@
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Javer-IA-nos - Banca Digital Javeriana</title>
+
+  <!-- Material Symbols Outlined font -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+    .perspective-1000 { perspective: 1000px; }
+    .transform-style-preserve-3d { transform-style: preserve-3d; }
+    .backface-hidden { backface-visibility: hidden; }
+  </style>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-secondary": "#00297b",
+            "surface-dim": "#0b1326",
+            "secondary": "#b5c4ff",
+            "primary": "#b1c7f0",
+            "on-error-container": "#ffdad6",
+            "surface-container-high": "#222a3d",
+            "tertiary": "#ffb955",
+            "inverse-surface": "#dae2fd",
+            "outline-variant": "#44474e",
+            "on-secondary-fixed": "#00164d",
+            "on-secondary-container": "#e3e7ff",
+            "on-tertiary": "#452b00",
+            "surface-container-highest": "#2d3449",
+            "on-tertiary-fixed-variant": "#633f00",
+            "on-primary": "#193151",
+            "on-secondary-fixed-variant": "#003cac",
+            "on-tertiary-container": "#c07e00",
+            "surface-container": "#171f33",
+            "secondary-container": "#0159f6",
+            "tertiary-fixed-dim": "#ffb955",
+            "on-tertiary-fixed": "#291800",
+            "error": "#ffb4ab",
+            "error-container": "#93000a",
+            "tertiary-container": "#362000",
+            "on-primary-fixed": "#001c3b",
+            "background": "#0b1326",
+            "primary-fixed": "#d5e3ff",
+            "primary-fixed-dim": "#b1c7f0",
+            "on-primary-container": "#778db2",
+            "inverse-on-surface": "#283044",
+            "primary-container": "#0b2545",
+            "surface-container-lowest": "#060e20",
+            "surface-variant": "#2d3449",
+            "on-surface-variant": "#c4c6cf",
+            "surface-tint": "#b1c7f0",
+            "surface": "#0b1326",
+            "secondary-fixed": "#dce1ff",
+            "tertiary-fixed": "#ffddb4",
+            "on-background": "#dae2fd",
+            "on-error": "#690005",
+            "outline": "#8e9098",
+            "surface-bright": "#31394d",
+            "surface-container-low": "#131b2e",
+            "on-surface": "#dae2fd",
+            "inverse-primary": "#495f82",
+            "secondary-fixed-dim": "#b5c4ff",
+            "on-primary-fixed-variant": "#314769"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-lg": "1.5rem",
+            "space-md": "1rem",
+            "space-xs": "0.25rem",
+            "gutter": "1rem",
+            "space-sm": "0.5rem",
+            "margin": "1.25rem",
+            "space-xl": "2rem"
+          },
+          fontFamily: {
+            "headline-lg": ["Space Grotesk", "sans-serif"],
+            "label-caps": ["Hanken Grotesk", "sans-serif"],
+            "headline-md": ["Space Grotesk", "sans-serif"],
+            "label-numeric-md": ["JetBrains Mono", "monospace"],
+            "headline-sm": ["Space Grotesk", "sans-serif"],
+            "label-numeric-lg": ["JetBrains Mono", "monospace"],
+            "headline-xl": ["Space Grotesk", "sans-serif"],
+            "headline-xl-mobile": ["Space Grotesk", "sans-serif"],
+            "body-lg": ["Hanken Grotesk", "sans-serif"],
+            "body-sm": ["Hanken Grotesk", "sans-serif"],
+            "label-code": ["JetBrains Mono", "monospace"],
+            "body-md": ["Hanken Grotesk", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Required React / Router / Babel CDN links -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/history@5/umd/history.development.js"></script>
+  <script src="https://unpkg.com/react-router@6.3.0/umd/react-router.development.js"></script>
+  <script src="https://unpkg.com/react-router-dom@6.3.0/umd/react-router-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+<body class="bg-background font-body-md text-on-surface antialiased selection:bg-secondary-container selection:text-on-secondary-container min-h-screen flex flex-col justify-between">
+
+<div id="root"></div>
+
+<script type="text/babel">
+  const { useState, useEffect } = React;
+  const { createRoot } = ReactDOM;
+  const { MemoryRouter, Routes, Route, Link, useNavigate, useLocation } = ReactRouterDOM;
+
+  // Shared Header Component
+  function Header() {
+    const location = useLocation();
+    const currentPath = location.pathname;
+
+    const navItems = [
+      { path: "/", label: "Inicio & Cuentas" },
+      { path: "/transacciones-pagos", label: "Transacciones & Pagos" },
+      { path: "/tarjetas-creditos", label: "Tarjetas & Créditos" },
+      { path: "/inversiones-financiero", label: "Inversiones & Financiero" },
+      { path: "/auditoria-seguridad-crm", label: "Auditoría, Seguridad & CRM" },
+    ];
+
+    return (
+      <header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.4)]">
+        <div class="h-20 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-6">
+          <div class="flex items-center gap-6">
+            <Link to="/" class="flex items-center gap-3">
+              <img
+                alt="Brand logo"
+                class="h-8 w-auto object-contain"
+                src="https://lh3.googleusercontent.com/aida/AEtjO1UUUPI57_Brz6JSAfSnkimAQPmVq02TGltnCe3bjAV0QFmlHyRkHODqMByTpf4OWCwyyEVfC9vNa8RuhDFnCTJj9dKqFZMpd3-hbmrsc1Hcq2rH5MDIwk0PxX62zylDLriFguAx2iS71TxtGgd2k_ERLhv0lQZKtWs_wQebdXRNqpJ3eLzofI6hz9tyLHFpWAJC6eT7GHMT5npdFqX9SAqYFzAGGljMGxTw8BhQ0MYKdUAtoIIzzJEW7UB4"
+              />
+              <div class="flex flex-col">
+                <span class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-none">Javer-IA-nos</span>
+                <span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest mt-0.5">Banca Digital Javeriana</span>
+              </div>
+            </Link>
+            <div class="hidden xl:flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-full">
+              <span class="material-symbols-outlined text-secondary text-sm">verified_user</span>
+              <div class="flex items-center gap-1.5">
+                <span class="font-label-code text-body-sm text-on-surface-variant">TLS 1.3 / E2E</span>
+                <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+                <span class="font-label-caps text-label-caps text-tertiary">ASR-01: SLA 99.99%</span>
+              </div>
+            </div>
+          </div>
+
+          <nav class="hidden lg:flex items-center gap-1">
+            {navItems.map((item) => {
+              const isActive = (item.path === "/" && currentPath === "/") || 
+                               (item.path !== "/" && currentPath.startsWith(item.path));
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  class={`px-3 py-2 font-body-md text-body-md transition-colors ${
+                    isActive
+                      ? "bg-primary-container text-primary font-medium rounded-lg"
+                      : "text-on-surface-variant hover:text-on-surface"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div class="flex items-center gap-3">
+            <div class="hidden sm:flex items-center gap-1.5 bg-surface-container-low px-2.5 py-1.5 rounded-lg">
+              <span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span>
+              <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">ms-mesh: sync</span>
+            </div>
+            <button
+              aria-label="Notificaciones push activas"
+              class="relative p-2 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface transition-colors"
+              type="button"
+              onClick={() => alert("Notificaciones Javer-IA: Sin alertas críticas.")}
+            >
+              <span class="material-symbols-outlined text-xl">notifications</span>
+              <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-tertiary ring-2 ring-surface"></span>
+            </button>
+            <div class="flex items-center gap-3 pl-2">
+              <div class="hidden md:flex flex-col text-right">
+                <span class="font-body-md text-body-md text-on-surface font-medium leading-tight">Sara Rodríguez</span>
+                <span class="font-body-sm text-body-sm text-on-surface-variant">Estudiante Javeriana</span>
+              </div>
+              <img
+                alt="Profile"
+                class="w-8 h-8 rounded-full object-cover ring-2 ring-primary/40"
+                src="https://lh3.googleusercontent.com/aida/AEtjO1XzsrkwdSF01EgoqeCsE8Z8TQcujx1v4-S7uoMHMJs_nIAM6UadrHdDvWjcq_sCO5wvQ5Xdgs2pj5AGZhWkTshTxfPtUth8RJOfmPjffWog4MzekUXEj6xqcICYZWzJhIEWI4NHZZweD_F9d6Rwml5h_zSA-IbGly5WrtryFHOeYS8Jn-rzbDs4RFdCTz4v8REbN7ZTyQoBTygtvE1Ko9X4KcGTz7gbQALOd1a75yfrH2i-dRtHG0X1W8sQ"
+              />
+              <button
+                class="p-1.5 text-on-surface-variant hover:text-error hover:bg-surface-container-high rounded-lg transition-colors"
+                title="Cerrar Sesión Segura (CU-15)"
+                type="button"
+                onClick={() => alert("Sesión finalizada de manera segura (CU-15).")}
+              >
+                <span class="material-symbols-outlined text-lg">logout</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  // Shared Footer Component
+  function Footer() {
+    return (
+      <footer class="w-full bg-surface-container-lowest mt-auto">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div class="flex flex-col gap-1 text-center md:text-left">
+            <div class="flex items-center justify-center md:justify-start gap-2">
+              <span class="material-symbols-outlined text-primary text-base">account_balance</span>
+              <span class="font-headline-sm text-headline-sm text-on-surface">Pontificia Universidad Javeriana</span>
+            </div>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">
+              Vigilado Superintendencia Financiera de Colombia. Seguro de depósitos FOGAFÍN.
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center justify-center gap-4 text-center">
+            <div class="bg-surface-container px-3 py-1.5 rounded-md">
+              <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Superfinanciera</span>
+            </div>
+            <div class="bg-surface-container px-3 py-1.5 rounded-md">
+              <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Fogafín Protegido</span>
+            </div>
+            <div class="bg-surface-container px-3 py-1.5 rounded-md">
+              <span class="font-label-caps text-label-caps text-secondary uppercase">Javer-IA Token 2FA</span>
+            </div>
+          </div>
+          <div class="text-center md:text-right font-body-sm text-body-sm text-outline">
+            © 2025 Javer-IA-nos Banca Digital. Arquitectura C4 Cloud Native.
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
+  // SCREEN 1: Inicio & Cuentas (Screen ID: bf87dc5431e14af4a22b876bf442e441)
+  function InicioCuentasScreen() {
+    const navigate = useNavigate();
+    const [hiddenBalance, setHiddenBalance] = useState(false);
+    const [syncing, setSyncing] = useState(false);
+
+    const handleSync = () => {
+      setSyncing(true);
+      setTimeout(() => setSyncing(false), 800);
+    };
+
+    return (
+      <div class="flex flex-col w-full space-y-8">
+        {/* Status & Architecture Bar */}
+        <div class="flex flex-wrap items-center justify-between gap-4 bg-surface-container-low px-5 py-3 rounded-xl shadow-sm">
+          <div class="flex items-center gap-4 flex-wrap">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-secondary animate-ping"></span>
+              <span class="font-label-code text-label-code text-on-surface">C4::Core-Banking::Live</span>
+            </div>
+            <span class="text-outline-variant font-label-code">•</span>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-secondary text-sm">speed</span>
+              <span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">
+                ASR-02 Latencia: <strong class="text-secondary font-label-code">142ms (&lt;2s SLA)</strong>
+              </span>
+            </div>
+            <span class="text-outline-variant font-label-code">•</span>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-tertiary text-sm">shield</span>
+              <span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Nodo Javeriana: Bogotá DC (Primario Activo)</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1.5 bg-surface-container-high px-3 py-1 rounded-full">
+              <span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">CU-11 Consolidación E2E</span>
+            </div>
+            <button
+              class="p-1.5 text-on-surface-variant hover:text-primary transition-colors"
+              onClick={handleSync}
+              title="Forzar sincronización de balances"
+              type="button"
+            >
+              <span class={`material-symbols-outlined text-lg ${syncing ? 'animate-spin' : ''}`}>sync</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Security Notification Banner */}
+        <div class="relative overflow-hidden rounded-2xl bg-surface-container p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-md">
+          <div class="absolute -right-8 -bottom-8 w-40 h-40 rounded-full bg-secondary-container/10 blur-2xl pointer-events-none"></div>
+          <div class="flex items-start gap-4">
+            <div class="p-2.5 rounded-xl bg-surface-container-high text-tertiary flex-shrink-0">
+              <span class="material-symbols-outlined text-2xl">verified</span>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Alerta de Seguridad &amp; Dispositivo Confiable (CU-14)</span>
+                <span class="bg-tertiary/15 text-tertiary px-2 py-0.5 rounded-full font-label-caps text-label-caps uppercase">Activo</span>
+              </div>
+              <p class="font-body-md text-body-md text-on-surface-variant mt-1">
+                Sesión validada con Huella Biométrica Javer-IA Token desde <span class="text-on-surface font-medium">Campus Central (IP 190.84.12.98)</span>. Sin transacciones anómalas detectadas en las últimas 72 horas.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 self-end md:self-auto">
+            <button class="px-3.5 py-2 rounded-lg bg-surface-container-high text-on-surface font-body-sm text-body-sm hover:bg-surface-container-highest transition-colors" type="button" onClick={() => navigate("/auditoria-seguridad-crm")}>
+              Bitácora de Sesión
+            </button>
+            <button class="px-3.5 py-2 rounded-lg bg-secondary-container text-on-secondary-container font-body-sm text-body-sm hover:bg-secondary transition-colors font-medium" type="button" onClick={() => navigate("/auditoria-seguridad-crm")}>
+              Gestionar Dispositivos
+            </button>
+          </div>
+        </div>
+
+        {/* Main Balance Card & Inflow/Outflow */}
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-8 rounded-3xl bg-gradient-to-br from-primary-container via-surface-container-high to-surface-container p-7 lg:p-8 flex flex-col justify-between relative overflow-hidden shadow-xl">
+            <svg class="absolute -right-6 -bottom-10 w-64 h-64 text-on-surface/[0.03] pointer-events-none" fill="currentColor" viewBox="0 0 100 100">
+              <path d="M45 10 h10 v35 h35 v10 h-35 v35 h-10 v-35 h-35 v-10 h35 z"></path>
+            </svg>
+            <div class="flex items-start justify-between relative z-10">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-label-caps text-label-caps uppercase tracking-widest text-primary">Saldo Consolidado Disponible</span>
+                  <span class="material-symbols-outlined text-sm text-primary">lock_clock</span>
+                </div>
+                <div class="flex items-baseline gap-3 mt-3">
+                  <h1 class="font-label-numeric-lg text-4xl lg:text-5xl font-bold tracking-tight text-inverse-surface">
+                    {hiddenBalance ? "$ •••.•••.•••" : "$ 14.850.200"}
+                  </h1>
+                  <span class="font-label-code text-headline-sm text-primary font-bold">COP</span>
+                  <button
+                    class="p-1.5 text-on-surface-variant hover:text-on-surface transition-colors"
+                    onClick={() => setHiddenBalance(!hiddenBalance)}
+                    title="Ocultar / Mostrar Saldo"
+                    type="button"
+                  >
+                    <span class="material-symbols-outlined text-xl">{hiddenBalance ? "visibility_off" : "visibility"}</span>
+                  </button>
+                </div>
+                <p class="font-body-sm text-body-sm text-on-surface-variant mt-2 flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-secondary text-base">trending_up</span>
+                  <span class="text-secondary font-medium">+$ 1.250.000 COP</span> ingresados este mes • 3 productos financieros activos
+                </p>
+              </div>
+              <div class="hidden sm:flex flex-col items-end">
+                <span class="bg-surface-container-lowest/80 text-secondary px-3 py-1 rounded-full font-label-code text-label-code shadow-sm">
+                  CU-11 :: SYNC_OK
+                </span>
+                <span class="text-on-surface-variant font-label-caps text-label-caps mt-1">Corte: Hoy 18:45 COT</span>
+              </div>
+            </div>
+
+            <div class="mt-8 pt-6 relative z-10">
+              <span class="font-label-caps text-label-caps uppercase tracking-wider text-on-surface-variant block mb-3">Acciones Rápidas Web</span>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <button class="group flex items-center gap-3 p-3.5 rounded-xl bg-secondary-container text-on-secondary-container hover:bg-secondary hover:text-on-secondary transition-all shadow-md" onClick={() => navigate("/transacciones-pagos")} type="button">
+                  <div class="w-9 h-9 rounded-lg bg-surface-container-lowest/20 flex items-center justify-center text-on-secondary-container group-hover:text-on-secondary">
+                    <span class="material-symbols-outlined text-xl">send</span>
+                  </div>
+                  <div class="text-left">
+                    <span class="font-body-md text-body-md font-semibold block leading-tight">Transferir</span>
+                    <span class="font-label-caps text-label-caps opacity-80">Transfiya / Cuentas</span>
+                  </div>
+                </button>
+                <button class="group flex items-center gap-3 p-3.5 rounded-xl bg-surface-container-highest text-on-surface hover:bg-surface-bright transition-all shadow-sm" onClick={() => navigate("/transacciones-pagos")} type="button">
+                  <div class="w-9 h-9 rounded-lg bg-surface-container-low flex items-center justify-center text-tertiary">
+                    <span class="material-symbols-outlined text-xl">receipt_long</span>
+                  </div>
+                  <div class="text-left">
+                    <span class="font-body-md text-body-md font-semibold block leading-tight">Pagar</span>
+                    <span class="font-label-caps text-label-caps text-on-surface-variant">Factura / Matrícula</span>
+                  </div>
+                </button>
+                <button class="group flex items-center gap-3 p-3.5 rounded-xl bg-surface-container-highest text-on-surface hover:bg-surface-bright transition-all shadow-sm" onClick={() => {
+                  const el = document.getElementById('docs-section');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }} type="button">
+                  <div class="w-9 h-9 rounded-lg bg-surface-container-low flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined text-xl">verified_user</span>
+                  </div>
+                  <div class="text-left">
+                    <span class="font-body-md text-body-md font-semibold block leading-tight">Certificados</span>
+                    <span class="font-label-caps text-label-caps text-on-surface-variant">QR &amp; SHA-256</span>
+                  </div>
+                </button>
+                <button class="group flex items-center gap-3 p-3.5 rounded-xl bg-surface-container-highest text-on-surface hover:bg-surface-bright transition-all shadow-sm" onClick={() => navigate("/inversiones-financiero")} type="button">
+                  <div class="w-9 h-9 rounded-lg bg-surface-container-low flex items-center justify-center text-secondary">
+                    <span class="material-symbols-outlined text-xl">savings</span>
+                  </div>
+                  <div class="text-left">
+                    <span class="font-body-md text-body-md font-semibold block leading-tight">Inversión</span>
+                    <span class="font-label-caps text-label-caps text-on-surface-variant">CDT Digital 11.2%</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-4 rounded-3xl bg-surface-container p-6 flex flex-col justify-between shadow-lg">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Flujo de Fondos</span>
+                <h2 class="font-headline-sm text-headline-sm text-on-surface mt-0.5">Balance Mensual</h2>
+              </div>
+              <span class="font-label-code text-label-code bg-surface-container-high text-on-surface-variant px-2.5 py-1 rounded-md">Nov 2025</span>
+            </div>
+            <div class="py-4">
+              <div class="flex items-end justify-between gap-3 h-32 pt-4 px-2">
+                <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+                  <div class="w-full max-w-[28px] rounded-t-lg bg-secondary/80 h-[45%]"></div>
+                  <span class="font-label-code text-label-code text-outline text-[10px]">S1</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+                  <div class="w-full max-w-[28px] rounded-t-lg bg-secondary/60 h-[70%]"></div>
+                  <span class="font-label-code text-label-code text-outline text-[10px]">S2</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+                  <div class="w-full max-w-[28px] rounded-t-lg bg-secondary h-[95%]"></div>
+                  <span class="font-label-code text-label-code text-outline text-[10px]">S3</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
+                  <div class="w-full max-w-[28px] rounded-t-lg bg-tertiary h-[35%]"></div>
+                  <span class="font-label-code text-label-code text-outline text-[10px]">S4</span>
+                </div>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 pt-3 bg-surface-container-low p-3 rounded-xl">
+              <div>
+                <span class="font-body-sm text-body-sm text-on-surface-variant block">Ingresos</span>
+                <span class="font-label-numeric-md text-label-numeric-md text-secondary font-bold">+$ 4.120.000</span>
+              </div>
+              <div>
+                <span class="font-body-sm text-body-sm text-on-surface-variant block">Egresos</span>
+                <span class="font-label-numeric-md text-label-numeric-md text-tertiary font-bold">-$ 1.840.500</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Section: CU-06 / CU-07 Cuentas */}
+        <section class="space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-label-caps text-label-caps uppercase text-secondary tracking-widest">Módulo C4::AccountService</span>
+                <span class="bg-surface-container-high px-2 py-0.5 rounded text-[10px] font-label-code text-primary">CU-06 • CU-07</span>
+              </div>
+              <h2 class="font-headline-lg text-headline-lg text-on-surface">Cuentas de Ahorros &amp; Corrientes</h2>
+            </div>
+            <button
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-bright text-primary font-body-md text-body-md transition-colors self-start sm:self-auto"
+              onClick={() => alert("Formulario para apertura de nueva subcuenta institucional.")}
+              type="button"
+            >
+              <span class="material-symbols-outlined text-lg">add_circle</span>
+              <span>Aperturar Nueva Subcuenta</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-6 rounded-2xl bg-surface-container-high flex flex-col justify-between shadow-md relative overflow-hidden group">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-primary-container/20 rounded-full blur-xl pointer-events-none"></div>
+              <div>
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-secondary"></span>
+                      <span class="font-body-md text-body-md font-semibold text-on-surface">Cuenta de Ahorros Nómina Estudiantil</span>
+                    </div>
+                    <div class="flex items-center gap-2 mt-1">
+                      <span class="font-label-code text-body-md text-on-surface-variant tracking-wider">No. 8920 •••• •••• 4192</span>
+                      <button class="text-on-surface-variant hover:text-on-surface transition-colors" onClick={() => alert("Número copiado")} title="Copiar número completo" type="button">
+                        <span class="material-symbols-outlined text-sm">content_copy</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="flex flex-col items-end gap-1">
+                    <span class="px-2.5 py-1 rounded-full bg-secondary-container/20 text-secondary font-label-caps text-label-caps uppercase font-bold">Activa</span>
+                    <span class="px-2 py-0.5 rounded-full bg-tertiary-container/30 text-tertiary font-label-caps text-[10px] uppercase font-semibold">Exenta 4x1000</span>
+                  </div>
+                </div>
+                <div class="mt-6">
+                  <span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Saldo Disponible</span>
+                  <div class="font-label-numeric-lg text-headline-lg text-on-surface font-bold mt-0.5">
+                    $ 9.350.200 <span class="text-body-sm font-label-code text-on-surface-variant font-normal">COP</span>
+                  </div>
+                  <div class="flex items-center gap-4 mt-2 font-body-sm text-body-sm text-on-surface-variant">
+                    <span>En Canje: <strong class="text-on-surface">$ 0</strong></span>
+                    <span>•</span>
+                    <span>Cupo Sobregiro: <strong class="text-on-surface">$ 500.000</strong></span>
+                  </div>
+                </div>
+              </div>
+              <div class="pt-6 mt-6 bg-surface-container/60 -mx-6 -mb-6 p-4 px-6 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-sm text-secondary">verified_user</span>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">Tarjeta Débito Virtual asociada</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button class="p-2 rounded-lg bg-surface-container-high hover:bg-surface-bright text-on-surface transition-colors" title="Ajustes de cuenta (CRUD)" type="button">
+                    <span class="material-symbols-outlined text-base">tune</span>
+                  </button>
+                  <button class="px-3 py-1.5 rounded-lg bg-secondary-container text-on-secondary-container hover:bg-secondary font-body-sm text-body-sm font-medium transition-colors" onClick={() => navigate("/transacciones-pagos")} type="button">
+                    Movimientos
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-surface-container-high flex flex-col justify-between shadow-md relative overflow-hidden group">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-secondary-container/10 rounded-full blur-xl pointer-events-none"></div>
+              <div>
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-secondary"></span>
+                      <span class="font-body-md text-body-md font-semibold text-on-surface">Cuenta Corriente Proyectos Semillero</span>
+                    </div>
+                    <div class="flex items-center gap-2 mt-1">
+                      <span class="font-label-code text-body-md text-on-surface-variant tracking-wider">No. 3105 •••• •••• 9811</span>
+                      <button class="text-on-surface-variant hover:text-on-surface transition-colors" onClick={() => alert("Número copiado")} title="Copiar número completo" type="button">
+                        <span class="material-symbols-outlined text-sm">content_copy</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="flex flex-col items-end gap-1">
+                    <span class="px-2.5 py-1 rounded-full bg-secondary-container/20 text-secondary font-label-caps text-label-caps uppercase font-bold">Activa</span>
+                    <span class="px-2 py-0.5 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-caps text-[10px] uppercase font-semibold">Gravamen 4x1000 Estándar</span>
+                  </div>
+                </div>
+                <div class="mt-6">
+                  <span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Saldo Disponible</span>
+                  <div class="font-label-numeric-lg text-headline-lg text-on-surface font-bold mt-0.5">
+                    $ 5.500.000 <span class="text-body-sm font-label-code text-on-surface-variant font-normal">COP</span>
+                  </div>
+                  <div class="flex items-center gap-4 mt-2 font-body-sm text-body-sm text-on-surface-variant">
+                    <span>Chequera: <strong class="text-on-surface">Electrónica 100%</strong></span>
+                    <span>•</span>
+                    <span>Sobregiro Autorizado: <strong class="text-secondary">$ 2.000.000</strong></span>
+                  </div>
+                </div>
+              </div>
+              <div class="pt-6 mt-6 bg-surface-container/60 -mx-6 -mb-6 p-4 px-6 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-sm text-tertiary">assignment_turned_in</span>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">Firma mancomunada habilitada</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button class="p-2 rounded-lg bg-surface-container-high hover:bg-surface-bright text-on-surface transition-colors" title="Ajustes de cuenta (CRUD)" type="button">
+                    <span class="material-symbols-outlined text-base">tune</span>
+                  </button>
+                  <button class="px-3 py-1.5 rounded-lg bg-secondary-container text-on-secondary-container hover:bg-secondary font-body-sm text-body-sm font-medium transition-colors" onClick={() => navigate("/transacciones-pagos")} type="button">
+                    Movimientos
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section: CU-08 / CU-09 Bolsillos Inteligentes */}
+        <section class="space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-label-caps text-label-caps uppercase text-tertiary tracking-widest">Módulo C4::PocketSavingsEngine</span>
+                <span class="bg-surface-container-high px-2 py-0.5 rounded text-[10px] font-label-code text-tertiary">CU-08 • CU-09</span>
+              </div>
+              <h2 class="font-headline-lg text-headline-lg text-on-surface">Bolsillos Inteligentes &amp; Cron Automático</h2>
+            </div>
+            <button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-tertiary text-on-tertiary font-body-md text-body-md font-semibold hover:bg-tertiary-fixed transition-colors self-start sm:self-auto shadow-md" onClick={() => alert("Asistente de configuración de meta de ahorro...")} type="button">
+              <span class="material-symbols-outlined text-lg">add</span>
+              <span>Crear Nuevo Bolsillo Programado</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 rounded-2xl bg-surface-container p-6 shadow-md flex flex-col justify-between">
+              <div>
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center text-primary">
+                      <span class="material-symbols-outlined text-2xl">school</span>
+                    </div>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <h3 class="font-headline-sm text-headline-sm text-on-surface">Matrícula Javeriana 2026-2</h3>
+                        <span class="px-2 py-0.5 rounded bg-secondary-container/20 text-secondary font-label-code text-label-code">CRON: Mensual</span>
+                      </div>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant">Deducción automática programada el día 30 de cada mes</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <span class="font-label-caps text-label-caps uppercase text-on-surface-variant block">Meta Total</span>
+                    <span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">$ 12.000.000 COP</span>
+                  </div>
+                </div>
+                <div class="mt-6 space-y-2">
+                  <div class="flex justify-between font-body-sm text-body-sm">
+                    <span class="text-on-surface">Ahorrado: <strong class="font-label-numeric-md text-secondary">$ 7.800.000 COP</strong></span>
+                    <span class="font-label-code text-secondary font-semibold">65.0% completado</span>
+                  </div>
+                  <div class="w-full h-3 bg-surface-container-highest rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-secondary-container to-secondary rounded-full" style={{ width: "65%" }}></div>
+                  </div>
+                  <div class="flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm pt-1">
+                    <span>Faltan: $ 4.200.000 COP</span>
+                    <span>7 meses restantes para el ciclo</span>
+                  </div>
+                </div>
+                <div class="mt-6 p-4 rounded-xl bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-lg bg-surface-container-high text-secondary">
+                      <span class="material-symbols-outlined text-xl">event_repeat</span>
+                    </div>
+                    <div>
+                      <span class="font-label-code text-label-code text-on-surface block font-bold">cron(0 0 30 * ? *)</span>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant">Próximo débito automático: <strong>30 Nov 2025</strong> por <strong>$ 600.000 COP</strong></span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 self-end sm:self-auto">
+                    <button class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-on-surface text-body-sm font-medium transition-colors" onClick={() => alert("Débito en pausa temporal.")} type="button">
+                      Pausar Débito
+                    </button>
+                    <button class="px-3 py-1.5 rounded-lg bg-primary text-on-primary text-body-sm font-medium hover:bg-primary-fixed transition-colors" onClick={() => alert("Aporte adicional registrado.")} type="button">
+                      Aportar Extra
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-5 pt-4 flex items-center justify-between text-body-sm text-on-surface-variant">
+                <span>Tasa E.A. Rendimiento Bolsillo: <strong class="text-secondary font-label-code">9.75% E.A.</strong></span>
+                <a class="text-secondary hover:underline inline-flex items-center gap-1 font-medium cursor-pointer" onClick={() => alert("Configuración de redondeo automática.")}>
+                  Configurar Reglas de Redondeo
+                  <span class="material-symbols-outlined text-sm">chevron_right</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="rounded-2xl bg-surface-container p-6 shadow-md flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between">
+                  <div class="w-12 h-12 rounded-xl bg-tertiary-container/30 flex items-center justify-center text-tertiary">
+                    <span class="material-symbols-outlined text-2xl">health_and_safety</span>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-full bg-surface-container-high font-label-caps text-label-caps text-on-surface uppercase">Liquidez Inmediata</span>
+                </div>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface mt-4">Fondo de Emergencia</h3>
+                <p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Colchón financiero personal para contingencias médicas o técnicas.</p>
+                <div class="mt-5">
+                  <span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Saldo Acumulado</span>
+                  <div class="font-label-numeric-lg text-headline-md text-tertiary font-bold mt-0.5">
+                    $ 1.700.000 <span class="text-body-sm font-label-code text-on-surface-variant font-normal">COP</span>
+                  </div>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant mt-1 block">Meta deseada: $ 3.000.000 COP</span>
+                </div>
+                <div class="mt-4 space-y-2">
+                  <div class="w-full h-2.5 bg-surface-container-highest rounded-full overflow-hidden">
+                    <div class="h-full bg-tertiary rounded-full" style={{ width: "56.6%" }}></div>
+                  </div>
+                  <div class="flex justify-between font-label-code text-label-code text-on-surface-variant">
+                    <span>Progreso: 56.6%</span>
+                    <span class="text-tertiary font-semibold">Cron Quincenal</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-6 pt-4 bg-surface-container-low -mx-6 -mb-6 p-4 rounded-b-2xl flex items-center justify-between">
+                <button class="text-on-surface font-body-sm text-body-sm hover:text-secondary flex items-center gap-1 font-medium" onClick={() => alert("Fondos transferidos a cuenta principal.")} type="button">
+                  <span class="material-symbols-outlined text-base">swap_horiz</span>
+                  Liberar a Cuenta
+                </button>
+                <button class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-on-surface text-body-sm font-medium" onClick={() => alert("Ventana de edición de meta.")} type="button">
+                  Editar Meta
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section: CU-11 Historial */}
+        <section class="space-y-4">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-label-caps text-label-caps uppercase text-secondary tracking-widest">Auditoría Transaccional Ledger</span>
+                <span class="bg-surface-container-high px-2 py-0.5 rounded text-[10px] font-label-code text-primary">CU-11 Feed</span>
+              </div>
+              <h2 class="font-headline-lg text-headline-lg text-on-surface">Historial de Movimientos Recientes</h2>
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5">
+              <div class="flex items-center gap-1.5 bg-surface-container-high px-3 py-1.5 rounded-xl text-body-sm text-on-surface">
+                <span class="material-symbols-outlined text-base text-on-surface-variant">calendar_today</span>
+                <span>Últimos 30 días</span>
+                <span class="material-symbols-outlined text-sm text-on-surface-variant">expand_more</span>
+              </div>
+              <div class="flex items-center gap-1.5 bg-surface-container-high px-3 py-1.5 rounded-xl text-body-sm text-on-surface">
+                <span class="material-symbols-outlined text-base text-on-surface-variant">category</span>
+                <span>Todas las categorías</span>
+                <span class="material-symbols-outlined text-sm text-on-surface-variant">expand_more</span>
+              </div>
+              <button class="p-2 bg-surface-container-high hover:bg-surface-bright rounded-xl text-on-surface-variant hover:text-on-surface transition-colors" onClick={() => alert("Exportando histórico en formato CSV...")} title="Exportar CSV/XLS" type="button">
+                <span class="material-symbols-outlined text-lg">download</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-hidden rounded-2xl bg-surface-container shadow-md">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-surface-container-highest text-on-surface-variant font-label-caps text-label-caps uppercase tracking-wider">
+                    <th class="py-3.5 px-6">Transacción &amp; Canal</th>
+                    <th class="py-3.5 px-6">Referencia / Hash</th>
+                    <th class="py-3.5 px-6">Fecha &amp; Hora</th>
+                    <th class="py-3.5 px-6">Estado</th>
+                    <th class="py-3.5 px-6 text-right">Monto</th>
+                    <th class="py-3.5 px-6 text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-transparent font-body-md text-body-md">
+                  <tr class="hover:bg-surface-container-high/60 transition-colors">
+                    <td class="py-4 px-6 flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center text-primary flex-shrink-0">
+                        <span class="material-symbols-outlined text-xl">account_balance</span>
+                      </div>
+                      <div>
+                        <span class="font-medium text-on-surface block">Pontificia Universidad Javeriana</span>
+                        <span class="font-body-sm text-body-sm text-on-surface-variant">Pago Derechos Pecuniarios • Canal PSE</span>
+                      </div>
+                    </td>
+                    <td class="py-4 px-6">
+                      <span class="font-label-code text-label-code text-secondary bg-surface-container-lowest px-2 py-1 rounded">TX-PSE-892104</span>
+                    </td>
+                    <td class="py-4 px-6">
+                      <span class="text-on-surface block">Hoy, 14:20</span>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant">Bogotá UTC-5</span>
+                    </td>
+                    <td class="py-4 px-6">
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container/20 text-secondary font-label-caps text-label-caps uppercase font-bold">
+                        <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                        Aprobada
+                      </span>
+                    </td>
+                    <td class="py-4 px-6 text-right font-label-numeric-md font-bold text-on-surface">-$ 450.000 COP</td>
+                    <td class="py-4 px-6 text-center">
+                      <button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors" onClick={() => alert("Generando Comprobante...")} title="Descargar comprobante PDF" type="button">
+                        <span class="material-symbols-outlined text-base">receipt</span>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-surface-container-high/60 transition-colors">
+                    <td class="py-4 px-6 flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center text-secondary flex-shrink-0">
+                        <span class="material-symbols-outlined text-xl">send</span>
+                      </div>
+                      <div>
+                        <span class="font-medium text-on-surface block">Transferencia Transfiya Recibida</span>
+                        <span class="font-body-sm text-body-sm text-on-surface-variant">Origen: Felipe Gómez (Móvil •••• 9821)</span>
+                      </div>
+                    </td>
+                    <td class="py-4 px-6">
+                      <span class="font-label-code text-label-code text-secondary bg-surface-container-lowest px-2 py-1 rounded">TX-TRF-441092</span>
+                    </td>
+                    <td class="py-4 px-6">
+                      <span class="text-on-surface block">Ayer, 18:05</span>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant">Inmediata 24/7</span>
+                    </td>
+                    <td class="py-4 px-6">
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-container/20 text-secondary font-label-caps text-label-caps uppercase font-bold">
+                        <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                        Aprobada
+                      </span>
+                    </td>
+                    <td class="py-4 px-6 text-right font-label-numeric-md font-bold text-secondary">+$ 180.000 COP</td>
+                    <td class="py-4 px-6 text-center">
+                      <button class="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors" onClick={() => alert("Generando Comprobante...")} title="Descargar comprobante PDF" type="button">
+                        <span class="material-symbols-outlined text-base">receipt</span>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="p-4 bg-surface-container-low flex flex-col sm:flex-row items-center justify-between gap-3 text-body-sm text-on-surface-variant">
+              <span>Mostrando 2 de 128 registros auditados</span>
+              <div class="flex items-center gap-2">
+                <button class="px-3 py-1 rounded-lg bg-surface-container-high hover:bg-surface-bright text-on-surface disabled:opacity-40" disabled type="button">Anterior</button>
+                <span class="font-label-code text-label-code px-2 text-on-surface">1 / 32</span>
+                <button class="px-3 py-1 rounded-lg bg-surface-container-high hover:bg-surface-bright text-on-surface" type="button">Siguiente</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section: CU-10 Certificaciones */}
+        <section class="space-y-4" id="docs-section">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-label-caps text-label-caps uppercase text-secondary tracking-widest">Módulo C4::DocumentEngine</span>
+                <span class="bg-surface-container-high px-2 py-0.5 rounded text-[10px] font-label-code text-primary">CU-10 Cripto-Firmas</span>
+              </div>
+              <h2 class="font-headline-lg text-headline-lg text-on-surface">Certificaciones &amp; Extractos Oficiales</h2>
+            </div>
+            <div class="flex items-center gap-2 text-body-sm text-on-surface-variant">
+              <span class="material-symbols-outlined text-secondary text-base">verified</span>
+              <span>Validables en línea con código QR único y hash SHA-256</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="rounded-2xl bg-surface-container p-6 shadow-md flex flex-col justify-between">
+              <div>
+                <div class="flex items-start justify-between">
+                  <div class="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined text-2xl">description</span>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-full bg-secondary-container/20 text-secondary font-label-code text-label-code">Instantáneo</span>
+                </div>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface mt-4">Certificado Bancario General</h3>
+                <p class="font-body-sm text-body-sm text-on-surface-variant mt-1.5">
+                  Incluye titularidad de cuentas, saldo promedio mensual, fecha de apertura y exención 4x1000.
+                </p>
+                <div class="mt-4 p-3 rounded-xl bg-surface-container-low space-y-1">
+                  <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Firma Digital Registrada</span>
+                  <div class="font-label-code text-[11px] text-secondary truncate">SHA256: e8c42b901a...f569b91e</div>
+                </div>
+              </div>
+              <div class="mt-6 pt-4 flex items-center gap-3">
+                <button class="flex-1 py-2.5 px-3 rounded-xl bg-secondary-container text-on-secondary-container hover:bg-secondary font-body-sm text-body-sm font-medium transition-colors flex items-center justify-center gap-2" onClick={() => alert("Descargando Certificado Oficial en PDF")} type="button">
+                  <span class="material-symbols-outlined text-base">download</span>
+                  <span>Descargar PDF</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="rounded-2xl bg-surface-container p-6 shadow-md flex flex-col justify-between">
+              <div>
+                <div class="flex items-start justify-between">
+                  <div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center text-secondary">
+                    <span class="material-symbols-outlined text-2xl">article</span>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-full bg-surface-container-high font-label-code text-label-code text-on-surface">Octubre 2025</span>
+                </div>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface mt-4">Extracto Mensual Integral</h3>
+                <p class="font-body-sm text-body-sm text-on-surface-variant mt-1.5">
+                  Desglose pormenorizado de retenciones, IVA, GMF (4x1000) y conciliación tributaria oficial.
+                </p>
+                <div class="mt-4 p-3 rounded-xl bg-surface-container-low space-y-1">
+                  <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Timbre Digital</span>
+                  <div class="font-label-code text-[11px] text-secondary truncate">UUID: 9a78-2c01-fe88-4100</div>
+                </div>
+              </div>
+              <div class="mt-6 pt-4 flex items-center gap-3">
+                <button class="flex-1 py-2.5 px-3 rounded-xl bg-surface-container-high text-on-surface hover:bg-surface-bright font-body-sm text-body-sm font-medium transition-colors flex items-center justify-center gap-2" onClick={() => alert("Descargando Extracto Mensual")} type="button">
+                  <span class="material-symbols-outlined text-base">download</span>
+                  <span>Descargar Extracto</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="rounded-2xl bg-surface-container p-6 shadow-md flex flex-col justify-between">
+              <div>
+                <div class="flex items-start justify-between">
+                  <div class="w-12 h-12 rounded-xl bg-tertiary-container/30 flex items-center justify-center text-tertiary">
+                    <span class="material-symbols-outlined text-2xl">badge</span>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-full bg-tertiary-container/20 text-tertiary font-label-code text-label-code">DIAN / Renta</span>
+                </div>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface mt-4">Certificado de Retención &amp; Saldo</h3>
+                <p class="font-body-sm text-body-sm text-on-surface-variant mt-1.5">
+                  Documento reglamentario para declaración de renta ante la DIAN.
+                </p>
+                <div class="mt-4 p-3 rounded-xl bg-surface-container-low space-y-1">
+                  <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Metadatos Seguros</span>
+                  <div class="font-label-code text-[11px] text-secondary truncate">DIAN-XML: Sello Autorizado</div>
+                </div>
+              </div>
+              <div class="mt-6 pt-4 flex items-center gap-3">
+                <button class="flex-1 py-2.5 px-3 rounded-xl bg-surface-container-high text-on-surface hover:bg-surface-bright font-body-sm text-body-sm font-medium transition-colors flex items-center justify-center gap-2" onClick={() => alert("Generando Certificado Fiscal DIAN")} type="button">
+                  <span class="material-symbols-outlined text-base">download</span>
+                  <span>Generar Fiscal</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  // SCREEN 2: Transacciones & Pagos (Screen ID: 5dd40684773a45d284ba0b49bc6dedeb)
+  function TransaccionesPagosScreen() {
+    const [balance, setBalance] = useState(18450200);
+    const [isMasked, setIsMasked] = useState(false);
+    const [activeTab, setActiveTab] = useState("ach");
+    const [showSchedule, setShowSchedule] = useState(false);
+    const [qrModalOpen, setQrModalOpen] = useState(false);
+
+    // Form states
+    const [achDest, setAchDest] = useState("");
+    const [achAccount, setAchAccount] = useState("");
+    const [achBank, setAchBank] = useState("Bancolombia");
+    const [achAmount, setAchAmount] = useState("");
+    const [achConcept, setAchConcept] = useState("");
+
+    const [swiftBeneficiary, setSwiftBeneficiary] = useState("Georgetown University - Exchange Dept");
+    const [swiftCode, setSwiftCode] = useState("CHASUS33XXX");
+    const [swiftIban, setSwiftIban] = useState("US64SVBK12345678901234");
+    const [swiftAmountUsd, setSwiftAmountUsd] = useState(1200);
+
+    const [activeConvenio, setActiveConvenio] = useState({
+      title: "Pontificia Universidad Javeriana - Matrícula Semestre 2025-1",
+      ref: "982341098273",
+      val: "8.740.000",
+      numVal: 8740000
+    });
+
+    const [receipt, setReceipt] = useState({
+      amount: "$ 350.000,00 COP",
+      concept: "Cuota Matrícula / Libros Javeriana",
+      beneficiary: "Pontificia Univ. Javeriana",
+      channel: "ACH Interbancario (PSE)",
+      ref: "CUS-202505-894103",
+      hash: "8f4a2b91c0e334de92a7f511082c16a8b79213d4ef",
+      date: "Hoy, 14:28:10 COT"
+    });
+
+    const [toast, setToast] = useState({ show: false, msg: "", type: "success" });
+
+    const showToast = (msg, type = "success") => {
+      setToast({ show: true, msg, type });
+      setTimeout(() => setToast({ show: false, msg: "", type: "success" }), 3500);
+    };
+
+    const handleAchSubmit = (e) => {
+      e.preventDefault();
+      const rawNum = parseInt(achAmount.replace(/\D/g, ""), 10) || 0;
+      if (rawNum <= 0) {
+        showToast("Por favor ingrese un monto válido.", "error");
+        return;
+      }
+      if (rawNum > balance) {
+        showToast("Fondos insuficientes en la cuenta de ahorros.", "error");
+        return;
+      }
+      setBalance(prev => prev - rawNum);
+      const newRef = "CUS-202505-" + Math.floor(100000 + Math.random() * 900000);
+      const newHash = Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
+      setReceipt({
+        amount: "$ " + new Intl.NumberFormat("es-CO").format(rawNum) + ",00 COP",
+        concept: achConcept || "Transferencia Interbancaria",
+        beneficiary: achDest || "Beneficiario",
+        channel: achBank.includes("Transfiya") ? "Transfiya Inmediato" : "ACH Colombia (" + achBank + ")",
+        ref: newRef,
+        hash: newHash,
+        date: "Hoy, " + new Date().toLocaleTimeString("es-CO")
+      });
+      showToast("Transferencia ACH / Transfiya procesada en 1.1s (ASR-02).");
+      setAchAmount("");
+      setAchConcept("");
+    };
+
+    const handleSwiftSubmit = (e) => {
+      e.preventDefault();
+      const totalCop = Math.round(parseFloat(swiftAmountUsd || 0) * 4112.50);
+      if (totalCop > balance) {
+        showToast("Saldo insuficiente para cubrir cotización internacional.", "error");
+        return;
+      }
+      setBalance(prev => prev - totalCop);
+      const newRef = "SWIFT-2025-" + Math.floor(100000 + Math.random() * 900000);
+      const newHash = Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
+      setReceipt({
+        amount: "USD $" + swiftAmountUsd + " (~ $ " + new Intl.NumberFormat("es-CO").format(totalCop) + " COP)",
+        concept: "Giro SWIFT Institucional",
+        beneficiary: swiftBeneficiary,
+        channel: "Red SWIFT / BIC Interbancaria",
+        ref: newRef,
+        hash: newHash,
+        date: "Hoy, " + new Date().toLocaleTimeString("es-CO")
+      });
+      showToast("Transferencia Internacional SWIFT autorizada.");
+    };
+
+    const handleFacturaSubmit = (e) => {
+      e.preventDefault();
+      if (activeConvenio.numVal > balance) {
+        showToast("Saldo insuficiente para cancelar la factura.", "error");
+        return;
+      }
+      setBalance(prev => prev - activeConvenio.numVal);
+      const newRef = "PSE-2025-" + Math.floor(100000 + Math.random() * 900000);
+      const newHash = Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
+      setReceipt({
+        amount: "$ " + activeConvenio.val + ",00 COP",
+        concept: "Pago de Factura Convenio",
+        beneficiary: activeConvenio.title,
+        channel: "PSE Institucional / Débito Directo",
+        ref: newRef,
+        hash: newHash,
+        date: "Hoy, " + new Date().toLocaleTimeString("es-CO")
+      });
+      showToast("Factura cancelada y paz y salvo emitido.");
+    };
+
+    return (
+      <div class="flex flex-col w-full gap-8">
+        {/* Telemetry Status Strip */}
+        <div class="flex flex-wrap items-center justify-between gap-4 bg-surface-container-low px-6 py-3 rounded-2xl shadow-sm">
+          <div class="flex items-center gap-4 flex-wrap">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-secondary-container animate-pulse"></span>
+              <span class="font-label-caps text-label-caps text-on-surface uppercase tracking-wider">Engine: Transaccional V4</span>
+            </div>
+            <span class="text-outline-variant font-label-code text-label-code">|</span>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-secondary text-sm">bolt</span>
+              <span class="font-label-code text-label-code text-on-surface-variant">ASR-02: Latencia &lt; 1.48s</span>
+            </div>
+            <span class="text-outline-variant font-label-code text-label-code">|</span>
+            <div class="flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-tertiary text-sm">security_update_good</span>
+              <span class="font-label-code text-label-code text-on-surface-variant">ASR-01: Idempotency-Key Active</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="font-label-code text-label-code text-primary bg-primary-container/60 px-2.5 py-1 rounded-md">Token 2FA: Validado</span>
+            <button
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright text-on-surface text-body-sm font-body-sm transition-all"
+              onClick={() => setQrModalOpen(true)}
+              type="button"
+            >
+              <span class="material-symbols-outlined text-base text-secondary">qr_code_scanner</span>
+              <span>Lector QR Interoperable</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Primary Layout */}
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Panel: Forms */}
+          <section class="lg:col-span-7 flex flex-col gap-6">
+            <div class="relative overflow-hidden bg-gradient-to-br from-primary-container via-surface-container-high to-surface-container rounded-3xl p-6 shadow-xl">
+              <div class="absolute -right-8 -top-8 w-44 h-44 rounded-full bg-secondary/10 blur-3xl pointer-events-none"></div>
+              <div class="flex items-center justify-between gap-4 mb-4">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary text-xl">account_balance_wallet</span>
+                  <span class="font-label-caps text-label-caps uppercase tracking-widest text-primary">Cuenta Origen Débito</span>
+                </div>
+                <span class="bg-surface-container-lowest/80 text-secondary font-label-code text-label-code px-2.5 py-0.5 rounded-full">Javeriana Nómina Digital</span>
+              </div>
+              <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                  <div class="font-body-sm text-body-sm text-on-surface-variant mb-1">Saldo Disponible Líquido</div>
+                  <div class="flex items-center gap-3">
+                    <span class="font-label-numeric-lg text-headline-xl text-on-surface tracking-tight">
+                      {isMasked ? "••••••••••••" : `$ ${new Intl.NumberFormat("es-CO").format(balance)},00`}
+                    </span>
+                    <button class="text-on-surface-variant hover:text-on-surface transition-colors p-1" onClick={() => setIsMasked(!isMasked)} title="Ocultar Saldo" type="button">
+                      <span class="material-symbols-outlined text-lg">{isMasked ? "visibility_off" : "visibility"}</span>
+                    </button>
+                  </div>
+                  <div class="font-label-code text-label-code text-on-surface-variant mt-1">Cta Ahorros No. 904-883210-44 (ACH / PSE Habilitada)</div>
+                </div>
+                <div class="flex flex-col items-start md:items-end gap-1">
+                  <span class="font-label-caps text-label-caps text-tertiary">Tope Diario ACH: $30.000.000</span>
+                  <span class="font-label-code text-label-code text-on-surface-variant">Consumido hoy: $1.200.000</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Channels Tabs */}
+            <div class="bg-surface-container rounded-3xl p-6 shadow-lg flex flex-col gap-6">
+              <div class="flex flex-wrap gap-2 p-1.5 bg-surface-container-low rounded-2xl">
+                <button
+                  class={`flex-1 min-w-[120px] py-2.5 px-3 rounded-xl font-headline-sm text-body-md transition-all flex items-center justify-center gap-2 ${
+                    activeTab === "ach" ? "bg-secondary-container text-on-secondary-container shadow-md" : "text-on-surface-variant hover:text-on-surface"
+                  }`}
+                  onClick={() => setActiveTab("ach")}
+                  type="button"
+                >
+                  <span class="material-symbols-outlined text-lg">sync_alt</span>
+                  <span>Transfiya / ACH</span>
+                </button>
+                <button
+                  class={`flex-1 min-w-[120px] py-2.5 px-3 rounded-xl font-headline-sm text-body-md transition-all flex items-center justify-center gap-2 ${
+                    activeTab === "swift" ? "bg-secondary-container text-on-secondary-container shadow-md" : "text-on-surface-variant hover:text-on-surface"
+                  }`}
+                  onClick={() => setActiveTab("swift")}
+                  type="button"
+                >
+                  <span class="material-symbols-outlined text-lg">public</span>
+                  <span>SWIFT Internacional</span>
+                </button>
+                <button
+                  class={`flex-1 min-w-[120px] py-2.5 px-3 rounded-xl font-headline-sm text-body-md transition-all flex items-center justify-center gap-2 ${
+                    activeTab === "facturas" ? "bg-secondary-container text-on-secondary-container shadow-md" : "text-on-surface-variant hover:text-on-surface"
+                  }`}
+                  onClick={() => setActiveTab("facturas")}
+                  type="button"
+                >
+                  <span class="material-symbols-outlined text-lg">receipt_long</span>
+                  <span>Facturas &amp; Convenios</span>
+                </button>
+              </div>
+
+              {/* ACH Tab */}
+              {activeTab === "ach" && (
+                <div class="flex flex-col gap-5">
+                  <div>
+                    <div class="flex items-center justify-between mb-3">
+                      <span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Beneficiarios Frecuentes CRM</span>
+                      <button class="font-body-sm text-body-sm text-secondary hover:underline flex items-center gap-1" onClick={() => showToast("Directorio CRM sincronizado con 14 beneficiarios.")} type="button">
+                        <span>Directorio Completo</span>
+                        <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                      </button>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                      <button class="p-3 bg-surface-container-high hover:bg-surface-bright rounded-2xl flex flex-col items-start gap-1 text-left transition-all" onClick={() => { setAchDest("Felipe Giraldo"); setAchAccount("3004567890"); setAchBank("Bancolombia"); showToast("Contacto cargado"); }} type="button">
+                        <div class="flex items-center gap-2 w-full">
+                          <div class="w-7 h-7 rounded-full bg-primary-container text-primary flex items-center justify-center font-headline-sm text-body-sm">FG</div>
+                          <span class="font-label-code text-label-code text-tertiary">Transfiya</span>
+                        </div>
+                        <span class="font-headline-sm text-body-sm text-on-surface truncate w-full mt-1">Felipe Giraldo</span>
+                        <span class="font-body-sm text-body-sm text-on-surface-variant truncate w-full">Bancolombia</span>
+                      </button>
+                      <button class="p-3 bg-surface-container-high hover:bg-surface-bright rounded-2xl flex flex-col items-start gap-1 text-left transition-all" onClick={() => { setAchDest("Pontificia Univ. Javeriana"); setAchAccount("900123441"); setAchBank("Davivienda"); showToast("Contacto cargado"); }} type="button">
+                        <div class="flex items-center gap-2 w-full">
+                          <div class="w-7 h-7 rounded-full bg-secondary-container/30 text-secondary flex items-center justify-center font-headline-sm text-body-sm">PUJ</div>
+                          <span class="font-label-code text-label-code text-primary">ACH Inst.</span>
+                        </div>
+                        <span class="font-headline-sm text-body-sm text-on-surface truncate w-full mt-1">Univ. Javeriana</span>
+                        <span class="font-body-sm text-body-sm text-on-surface-variant truncate w-full">Matrícula &amp; Pagos</span>
+                      </button>
+                      <button class="p-3 bg-surface-container-high hover:bg-surface-bright rounded-2xl flex flex-col items-start gap-1 text-left transition-all" onClick={() => { setAchDest("Camila Restrepo"); setAchAccount("3159988221"); setAchBank("Nequi / Daviplata"); showToast("Contacto cargado"); }} type="button">
+                        <div class="flex items-center gap-2 w-full">
+                          <div class="w-7 h-7 rounded-full bg-tertiary-container text-tertiary flex items-center justify-center font-headline-sm text-body-sm">CR</div>
+                          <span class="font-label-code text-label-code text-tertiary">Transfiya</span>
+                        </div>
+                        <span class="font-headline-sm text-body-sm text-on-surface truncate w-full mt-1">Camila Restrepo</span>
+                        <span class="font-body-sm text-body-sm text-on-surface-variant truncate w-full">Nequi Móvil</span>
+                      </button>
+                      <button class="p-3 bg-surface-container-high hover:bg-surface-bright rounded-2xl flex flex-col items-start gap-1 text-left transition-all" onClick={() => { setAchDest("Laboratorio Odontología PUJ"); setAchAccount("860002123"); setAchBank("Banco de Bogotá"); showToast("Contacto cargado"); }} type="button">
+                        <div class="flex items-center gap-2 w-full">
+                          <div class="w-7 h-7 rounded-full bg-surface-container-lowest text-on-surface-variant flex items-center justify-center font-headline-sm text-body-sm">LAB</div>
+                          <span class="font-label-code text-label-code text-on-surface-variant">ACH</span>
+                        </div>
+                        <span class="font-headline-sm text-body-sm text-on-surface truncate w-full mt-1">Lab Odontología</span>
+                        <span class="font-body-sm text-body-sm text-on-surface-variant truncate w-full">Banco Bogotá</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <form class="flex flex-col gap-4" onSubmit={handleAchSubmit}>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="flex flex-col gap-1.5">
+                        <label class="font-body-sm text-body-sm text-on-surface-variant">Nombre Titular o Razón Social</label>
+                        <div class="bg-surface-container-low px-4 py-3 rounded-xl flex items-center gap-2">
+                          <span class="material-symbols-outlined text-outline text-lg">person</span>
+                          <input class="w-full bg-transparent text-on-surface font-body-md text-body-md focus:outline-none placeholder:text-outline-variant" placeholder="Felipe Giraldo Mendoza" required type="text" value={achDest} onChange={e => setAchDest(e.target.value)}/>
+                        </div>
+                      </div>
+                      <div class="flex flex-col gap-1.5">
+                        <label class="font-body-sm text-body-sm text-on-surface-variant">Entidad Financiera Destino</label>
+                        <div class="bg-surface-container-low px-4 py-3 rounded-xl flex items-center gap-2">
+                          <span class="material-symbols-outlined text-outline text-lg">account_balance</span>
+                          <select class="w-full bg-transparent text-on-surface font-body-md text-body-md focus:outline-none cursor-pointer" value={achBank} onChange={e => setAchBank(e.target.value)}>
+                            <option class="bg-surface-container-high text-on-surface" value="Transfiya (Celular)">Transfiya Inmediato (Línea Celular)</option>
+                            <option class="bg-surface-container-high text-on-surface" value="Bancolombia">Bancolombia</option>
+                            <option class="bg-surface-container-high text-on-surface" value="Davivienda">Davivienda</option>
+                            <option class="bg-surface-container-high text-on-surface" value="Banco de Bogotá">Banco de Bogotá</option>
+                            <option class="bg-surface-container-high text-on-surface" value="Banco BBVA Colombia">BBVA Colombia</option>
+                            <option class="bg-surface-container-high text-on-surface" value="Nequi / Daviplata">Billeteras Digitales (Nequi / Daviplata)</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="flex flex-col gap-1.5">
+                        <label class="font-body-sm text-body-sm text-on-surface-variant">No. Cuenta / Celular Móvil</label>
+                        <div class="bg-surface-container-low px-4 py-3 rounded-xl flex items-center gap-2">
+                          <span class="material-symbols-outlined text-outline text-lg">tag</span>
+                          <input class="w-full bg-transparent text-on-surface font-label-code text-label-code focus:outline-none placeholder:text-outline-variant" placeholder="3004567890 o Cta 11 dígitos" required type="text" value={achAccount} onChange={e => setAchAccount(e.target.value)}/>
+                        </div>
+                      </div>
+                      <div class="flex flex-col gap-1.5">
+                        <label class="font-body-sm text-body-sm text-on-surface-variant">Monto a Enviar (COP)</label>
+                        <div class="bg-surface-container-low px-4 py-3 rounded-xl flex items-center gap-2">
+                          <span class="font-label-numeric-md text-secondary font-bold">$</span>
+                          <input class="w-full bg-transparent text-on-surface font-label-numeric-md text-label-numeric-md focus:outline-none placeholder:text-outline-variant" placeholder="250.000" required type="text" value={achAmount} onChange={e => {
+                            const val = e.target.value.replace(/\D/g, '');
+                            setAchAmount(val ? new Intl.NumberFormat('es-CO').format(parseInt(val, 10)) : '');
+                          }}/>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                      <label class="font-body-sm text-body-sm text-on-surface-variant">Motivo / Concepto Transaccional</label>
+                      <div class="bg-surface-container-low px-4 py-3 rounded-xl flex items-center gap-2">
+                        <span class="material-symbols-outlined text-outline text-lg">description</span>
+                        <input class="w-full bg-transparent text-on-surface font-body-md text-body-md focus:outline-none placeholder:text-outline-variant" placeholder="Pago cuota proyecto Semillero IA" type="text" value={achConcept} onChange={e => setAchConcept(e.target.value)}/>
+                      </div>
+                    </div>
+
+                    <div class="p-4 bg-surface-container-low rounded-2xl flex flex-col gap-3">
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                          <span class="material-symbols-outlined text-secondary">update</span>
+                          <div>
+                            <div class="font-headline-sm text-body-md text-on-surface">Programar Pago Automático Periódico (CU-24)</div>
+                            <div class="font-body-sm text-body-sm text-on-surface-variant">Ejecuta débitos automáticos recurrentes cada mes</div>
+                          </div>
+                        </div>
+                        <input class="w-5 h-5 accent-secondary cursor-pointer" type="checkbox" checked={showSchedule} onChange={e => setShowSchedule(e.target.checked)}/>
+                      </div>
+                      {showSchedule && (
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                          <div class="bg-surface-container px-3 py-2 rounded-xl">
+                            <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Frecuencia</span>
+                            <select class="w-full bg-transparent text-on-surface font-body-sm text-body-sm mt-1 focus:outline-none">
+                              <option class="bg-surface-container-high">Mensual (Día 15)</option>
+                              <option class="bg-surface-container-high">Mensual (Día 30)</option>
+                              <option class="bg-surface-container-high">Quincenal (Días 15 y 30)</option>
+                            </select>
+                          </div>
+                          <div class="bg-surface-container px-3 py-2 rounded-xl">
+                            <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Vigencia hasta</span>
+                            <input class="w-full bg-transparent text-on-surface font-label-code text-label-code mt-1 focus:outline-none" type="date" defaultValue="2025-12-15"/>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div class="flex items-center justify-between p-3.5 bg-surface-container-lowest rounded-xl">
+                      <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-secondary text-sm">verified</span>
+                        <span class="font-body-sm text-body-sm text-on-surface-variant">Costo de Transferencia Transfiya / ACH:</span>
+                      </div>
+                      <span class="font-label-code text-label-code text-tertiary uppercase font-bold">$ 0 COP (Beneficio Javeriana)</span>
+                    </div>
+                    <button class="w-full py-3.5 px-6 rounded-2xl bg-secondary-container hover:bg-on-secondary-fixed-variant text-on-secondary-container font-headline-sm text-headline-sm flex items-center justify-center gap-3 transition-all shadow-lg active:scale-98" type="submit">
+                      <span class="material-symbols-outlined text-xl">send</span>
+                      <span>Confirmar y Enviar Dinero</span>
+                    </button>
+                  </form>
+                </div>
+              )}
+
+              {/* SWIFT Tab */}
+              {activeTab === "swift" && (
+                <div class="flex flex-col gap-5">
+                  <div class="p-4 bg-surface-container-low rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                      <div class="font-headline-sm text-headline-sm text-on-surface">Cotización en Tiempo Real (USD / COP)</div>
+                      <div class="font-body-sm text-body-sm text-on-surface-variant">Tasa TRM Preferencial Universitaria: <strong class="text-secondary font-label-code text-body-sm">1 USD = $ 4.112,50 COP</strong></div>
+                    </div>
+                    <div class="flex items-center gap-2 bg-surface-container-high px-3 py-1.5 rounded-xl">
+                      <span class="material-symbols-outlined text-tertiary text-sm">alarm</span>
+                      <span class="font-label-code text-label-code text-on-surface">Bloqueo de Tasa: 09:42 min</span>
+                    </div>
+                  </div>
+                  <form class="flex flex-col gap-4" onSubmit={handleSwiftSubmit}>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="flex flex-col gap-1.5">
+                        <label class="font-body-sm text-body-sm text-on-surface-variant">Beneficiario / Universidad Exterior</label>
+                        <div class="bg-surface-container-low px-4 py-3 rounded-xl flex items-center gap-2">
+                          <span class="material-symbols-outlined text-outline text-lg">school</span>
+                          <input class="w-full bg-transparent text-on-surface font-body-md text-body-md focus:outline-none" required type="text" value={swiftBeneficiary} onChange={e => setSwiftBeneficiary(e.target.value)}/>
+                        </div>
+                      </div>
+                      <div class="flex flex-col gap-1.5">
+                        <label class="font-body-sm text-body-sm text-on-surface-variant">Código SWIFT / BIC</label>
+                        <div class="bg-surface-container-low px-4 py-3 rounded-xl flex items-center gap-2">
+                          <span class="material-symbols-outlined text-outline text-lg">domain</span>
+                          <input class="w-full bg-transparent text-on-surface font-label-code text-label-code uppercase focus:outline-none" required type="text" value={swiftCode} onChange={e => setSwiftCode(e.target.value)}/>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="flex flex-col gap-1.5">
+                        <label class="font-body-sm text-body-sm text-on-surface-variant">IBAN / No. Cuenta Internacional</label>
+                        <div class="bg-surface-container-low px-4 py-3 rounded-xl flex items-center gap-2">
+                          <span class="material-symbols-outlined text-outline text-lg">tag</span>
+                          <input class="w-full bg-transparent text-on-surface font-label-code text-label-code uppercase focus:outline-none" required type="text" value={swiftIban} onChange={e => setSwiftIban(e.target.value)}/>
+                        </div>
+                      </div>
+                      <div class="flex flex-col gap-1.5">
+                        <label class="font-body-sm text-body-sm text-on-surface-variant">Monto a Transferir (USD)</label>
+                        <div class="bg-surface-container-low px-4 py-3 rounded-xl flex items-center gap-2">
+                          <span class="font-label-numeric-md text-secondary font-bold">USD $</span>
+                          <input class="w-full bg-transparent text-on-surface font-label-numeric-md text-label-numeric-md focus:outline-none" required step="0.01" type="number" value={swiftAmountUsd} onChange={e => setSwiftAmountUsd(e.target.value)}/>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="p-4 bg-surface-container-lowest rounded-2xl flex flex-col gap-2">
+                      <div class="flex justify-between items-center text-body-sm">
+                        <span class="text-on-surface-variant">Débito Estimado en Cuenta de Ahorros:</span>
+                        <span class="font-label-numeric-md text-on-surface font-bold">
+                          $ {new Intl.NumberFormat('es-CO').format(Math.round(parseFloat(swiftAmountUsd || 0) * 4112.50))},00 COP
+                        </span>
+                      </div>
+                      <div class="flex justify-between items-center text-body-sm">
+                        <span class="text-on-surface-variant">Comisión Cable SWIFT:</span>
+                        <span class="font-label-code text-label-code text-tertiary">$ 25.000 COP (Tarifa Reducida)</span>
+                      </div>
+                      <div class="flex justify-between items-center text-body-sm">
+                        <span class="text-on-surface-variant">Plazo de Acreditación Internacional:</span>
+                        <span class="font-label-code text-label-code text-secondary">24 Horas Hábiles</span>
+                      </div>
+                    </div>
+                    <button class="w-full py-3.5 px-6 rounded-2xl bg-secondary-container hover:bg-on-secondary-fixed-variant text-on-secondary-container font-headline-sm text-headline-sm flex items-center justify-center gap-3 transition-all shadow-lg" type="submit">
+                      <span class="material-symbols-outlined text-xl">payments</span>
+                      <span>Autorizar Transferencia Internacional</span>
+                    </button>
+                  </form>
+                </div>
+              )}
+
+              {/* Facturas Tab */}
+              {activeTab === "facturas" && (
+                <div class="flex flex-col gap-5">
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <button class="p-4 rounded-2xl bg-surface-container-high hover:bg-surface-bright text-left flex flex-col gap-2 transition-all" onClick={() => setActiveConvenio({ title: "Pontificia Universidad Javeriana - Matrícula Semestre 2025-1", ref: "982341098273", val: "8.740.000", numVal: 8740000 })} type="button">
+                      <div class="w-10 h-10 rounded-xl bg-tertiary-container text-tertiary flex items-center justify-center">
+                        <span class="material-symbols-outlined text-xl">school</span>
+                      </div>
+                      <div class="font-headline-sm text-body-md text-on-surface">Matrícula Javeriana</div>
+                      <div class="font-body-sm text-body-sm text-on-surface-variant">Convenio No. 00921 PUJ</div>
+                      <span class="font-label-caps text-label-caps text-secondary uppercase mt-1">Factura Pendiente</span>
+                    </button>
+                    <button class="p-4 rounded-2xl bg-surface-container-high hover:bg-surface-bright text-left flex flex-col gap-2 transition-all" onClick={() => setActiveConvenio({ title: "Enel Codensa - Servicio Residencial Energía", ref: "4410928-1", val: "118.400", numVal: 118400 })} type="button">
+                      <div class="w-10 h-10 rounded-xl bg-primary-container text-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined text-xl">electric_bolt</span>
+                      </div>
+                      <div class="font-headline-sm text-body-md text-on-surface">Enel Codensa</div>
+                      <div class="font-body-sm text-body-sm text-on-surface-variant">Energía Eléctrica Bogotá</div>
+                      <span class="font-label-caps text-label-caps text-on-surface-variant uppercase mt-1">Al día</span>
+                    </button>
+                    <button class="p-4 rounded-2xl bg-surface-container-high hover:bg-surface-bright text-left flex flex-col gap-2 transition-all" onClick={() => setActiveConvenio({ title: "Claro Soluciones Móviles & Hogar", ref: "8820019283", val: "142.900", numVal: 142900 })} type="button">
+                      <div class="w-10 h-10 rounded-xl bg-secondary-container/30 text-secondary flex items-center justify-center">
+                        <span class="material-symbols-outlined text-xl">wifi</span>
+                      </div>
+                      <div class="font-headline-sm text-body-md text-on-surface">Claro Colombia</div>
+                      <div class="font-body-sm text-body-sm text-on-surface-variant">Internet Fibra &amp; Móvil</div>
+                      <span class="font-label-caps text-label-caps text-on-surface-variant uppercase mt-1">Al día</span>
+                    </button>
+                  </div>
+
+                  <form class="flex flex-col gap-4 bg-surface-container-low p-5 rounded-2xl" onSubmit={handleFacturaSubmit}>
+                    <div class="flex items-center justify-between">
+                      <div class="font-headline-sm text-body-md text-on-surface">{activeConvenio.title}</div>
+                      <span class="font-label-code text-label-code text-tertiary bg-tertiary-container px-2 py-0.5 rounded-full">Vence en 4 días</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="flex flex-col gap-1.5">
+                        <label class="font-body-sm text-body-sm text-on-surface-variant">Número de Referencia</label>
+                        <input class="w-full bg-surface-container px-4 py-3 rounded-xl text-on-surface font-label-code text-label-code cursor-default" readOnly type="text" value={activeConvenio.ref}/>
+                      </div>
+                      <div class="flex flex-col gap-1.5">
+                        <label class="font-body-sm text-body-sm text-on-surface-variant">Valor a Pagar (COP)</label>
+                        <input class="w-full bg-surface-container px-4 py-3 rounded-xl text-on-surface font-label-numeric-md text-label-numeric-md text-tertiary cursor-default" readOnly type="text" value={`$ ${activeConvenio.val}`}/>
+                      </div>
+                    </div>
+                    <button class="w-full py-3.5 px-6 rounded-2xl bg-secondary-container hover:bg-on-secondary-fixed-variant text-on-secondary-container font-headline-sm text-headline-sm flex items-center justify-center gap-3 transition-all shadow-lg" type="submit">
+                      <span class="material-symbols-outlined text-xl">done_all</span>
+                      <span>Liquidar Factura Institucional</span>
+                    </button>
+                  </form>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Right Panel: Receipt, Scheduled, History */}
+          <aside class="lg:col-span-5 flex flex-col gap-6">
+            <div class="bg-surface-container rounded-3xl p-6 shadow-xl flex flex-col gap-5 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-secondary-container/10 rounded-full blur-2xl pointer-events-none"></div>
+              <div class="flex items-center justify-between border-b pb-4">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-full bg-secondary-container/20 text-secondary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-lg">verified_user</span>
+                  </div>
+                  <div>
+                    <span class="font-headline-sm text-body-md text-on-surface block leading-tight">Comprobante de Pago</span>
+                    <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Certificación Electrónica</span>
+                  </div>
+                </div>
+                <span class="px-2.5 py-1 rounded-full bg-surface-container-high text-primary font-label-code text-label-code flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+                  <span>Aprobado</span>
+                </span>
+              </div>
+              <div class="text-center py-2">
+                <div class="font-body-sm text-body-sm text-on-surface-variant">Valor Total Transferido</div>
+                <div class="font-label-numeric-lg text-headline-xl text-on-surface font-bold tracking-tight mt-0.5">{receipt.amount}</div>
+                <div class="font-body-sm text-body-sm text-secondary mt-1">{receipt.concept}</div>
+              </div>
+              <div class="bg-surface-container-low rounded-2xl p-4 flex flex-col gap-2.5 text-body-sm font-body-sm">
+                <div class="flex justify-between items-center">
+                  <span class="text-on-surface-variant">Referencia Única (CUS)</span>
+                  <span class="font-label-code text-label-code text-on-surface">{receipt.ref}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-on-surface-variant">Beneficiario</span>
+                  <span class="font-headline-sm text-body-sm text-on-surface font-semibold">{receipt.beneficiary}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-on-surface-variant">Canal de Liquidación</span>
+                  <span class="font-label-code text-label-code text-secondary">{receipt.channel}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-on-surface-variant">Fecha &amp; Timestamp</span>
+                  <span class="font-label-code text-label-code text-on-surface-variant">{receipt.date}</span>
+                </div>
+                <div class="flex flex-col gap-1 pt-2">
+                  <span class="text-on-surface-variant font-label-caps text-label-caps uppercase">Firma Criptográfica SHA-256</span>
+                  <span class="font-label-code text-body-sm text-outline truncate bg-surface-container-lowest p-1.5 rounded-lg">{receipt.hash}</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <button class="py-2.5 px-4 rounded-xl bg-surface-container-high hover:bg-surface-bright text-on-surface font-body-md text-body-md flex items-center justify-center gap-2 transition-all" onClick={() => showToast("Comprobante firmado en PDF descargado.")} type="button">
+                  <span class="material-symbols-outlined text-lg text-secondary">picture_as_pdf</span>
+                  <span>Descargar PDF</span>
+                </button>
+                <button class="py-2.5 px-4 rounded-xl bg-surface-container-high hover:bg-surface-bright text-on-surface font-body-md text-body-md flex items-center justify-center gap-2 transition-all" onClick={() => showToast("Comprobante enviado a sara.rodriguez@javeriana.edu.co")} type="button">
+                  <span class="material-symbols-outlined text-lg text-secondary">forward_to_inbox</span>
+                  <span>Enviar Email</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Programmed Payments */}
+            <div class="bg-surface-container rounded-3xl p-6 shadow-xl flex flex-col gap-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-tertiary text-xl">event_repeat</span>
+                  <span class="font-headline-sm text-headline-sm text-on-surface">Pagos Programados (CU-24)</span>
+                </div>
+                <span class="bg-tertiary-container/40 text-tertiary font-label-code text-label-code px-2 py-0.5 rounded-full">3 Activos</span>
+              </div>
+              <div class="flex flex-col gap-3">
+                <div class="p-3.5 bg-surface-container-low rounded-2xl flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center text-primary">
+                      <span class="material-symbols-outlined text-base">home</span>
+                    </div>
+                    <div>
+                      <div class="font-headline-sm text-body-md text-on-surface">Arriendo Chapinero</div>
+                      <div class="font-body-sm text-body-sm text-on-surface-variant">Día 05 de cada mes • Bancolombia</div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <span class="font-label-numeric-md text-body-md text-on-surface block font-bold">$ 1.850.000</span>
+                    <span class="font-label-caps text-label-caps text-secondary">Próximo: 05 Jun</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        {/* QR Modal */}
+        {qrModalOpen && (
+          <div class="fixed inset-0 z-50 bg-surface-dim/80 backdrop-blur-md flex items-center justify-center p-4">
+            <div class="bg-surface-container rounded-3xl max-w-md w-full p-6 shadow-2xl flex flex-col gap-5">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-secondary">qr_code_2</span>
+                  <span class="font-headline-sm text-headline-sm text-on-surface">Código QR Redeban / PSE (CU-25)</span>
+                </div>
+                <button class="text-on-surface-variant hover:text-on-surface p-1" onClick={() => setQrModalOpen(false)} type="button">
+                  <span class="material-symbols-outlined text-xl">close</span>
+                </button>
+              </div>
+              <div class="bg-surface-container-low p-6 rounded-2xl flex flex-col items-center justify-center gap-4">
+                <div class="p-4 bg-white rounded-2xl shadow-inner flex items-center justify-center">
+                  <svg class="w-44 h-44" fill="#0b1326" viewBox="0 0 100 100">
+                    <rect fill="#0b1326" height="30" rx="3" width="30" x="0" y="0"></rect>
+                    <rect fill="#ffffff" height="20" rx="2" width="20" x="5" y="5"></rect>
+                    <rect fill="#0b1326" height="12" width="12" x="9" y="9"></rect>
+                    <rect fill="#0b1326" height="30" rx="3" width="30" x="70" y="0"></rect>
+                    <rect fill="#ffffff" height="20" rx="2" width="20" x="75" y="5"></rect>
+                    <rect fill="#0b1326" height="12" width="12" x="79" y="9"></rect>
+                    <rect fill="#0b1326" height="30" rx="3" width="30" x="0" y="70"></rect>
+                    <rect fill="#ffffff" height="20" rx="2" width="20" x="5" y="75"></rect>
+                    <rect fill="#0b1326" height="12" width="12" x="9" y="79"></rect>
+                    <rect fill="#0159f6" height="8" width="8" x="36" y="10"></rect>
+                    <rect fill="#0b1326" height="8" width="14" x="48" y="10"></rect>
+                    <rect fill="#0b1326" height="8" width="26" x="36" y="24"></rect>
+                    <rect fill="#0b1326" height="8" width="12" x="10" y="36"></rect>
+                    <rect fill="#0159f6" height="16" width="16" x="28" y="36"></rect>
+                    <rect fill="#0b1326" height="28" width="8" x="50" y="36"></rect>
+                    <rect fill="#0b1326" height="10" width="26" x="64" y="36"></rect>
+                    <rect fill="#0b1326" height="14" width="14" x="10" y="48"></rect>
+                    <rect fill="#0159f6" height="12" width="12" x="64" y="52"></rect>
+                    <rect fill="#0b1326" height="20" width="10" x="80" y="52"></rect>
+                    <rect fill="#0b1326" height="20" width="10" x="36" y="70"></rect>
+                    <rect fill="#0b1326" height="10" width="20" x="52" y="70"></rect>
+                    <rect fill="#0159f6" height="8" width="38" x="52" y="86"></rect>
+                  </svg>
+                </div>
+                <div class="text-center">
+                  <div class="font-headline-sm text-body-md text-on-surface">Sara Rodríguez • Cta Ahorros 904-883210-44</div>
+                  <div class="font-label-code text-label-code text-on-surface-variant">Compatible con Redeban, Transfiya y Billeteras Digitales</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <button class="flex-1 py-2.5 px-4 rounded-xl bg-surface-container-high hover:bg-surface-bright text-on-surface font-body-md text-body-md flex items-center justify-center gap-2" onClick={() => showToast("Enlace de cobro copiado al portapapeles.")} type="button">
+                  <span class="material-symbols-outlined text-base">content_copy</span>
+                  <span>Copiar Enlace</span>
+                </button>
+                <button class="flex-1 py-2.5 px-4 rounded-xl bg-secondary-container text-on-secondary-container font-body-md text-body-md flex items-center justify-center gap-2" onClick={() => setQrModalOpen(false)} type="button">
+                  <span>Listo</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Toast */}
+        <div class={`fixed bottom-6 right-6 z-50 transform transition-all duration-300 pointer-events-none bg-surface-container-highest px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 max-w-sm ${toast.show ? 'translate-y-0 opacity-100' : 'translate-y-24 opacity-0'}`}>
+          <span class={`material-symbols-outlined text-xl ${toast.type === 'error' ? 'text-error' : 'text-secondary'}`}>
+            {toast.type === 'error' ? 'error' : 'check_circle'}
+          </span>
+          <span class="font-body-md text-body-md text-on-surface">{toast.msg}</span>
+        </div>
+      </div>
+    );
+  }
+
+  // SCREEN 3: Tarjetas & Créditos (Screen ID: a013b6e31e2b48f796d075ad93091b56)
+  function TarjetasCreditosScreen() {
+    const [cardType, setCardType] = useState('credito');
+    const [isFlipped, setIsFlipped] = useState(false);
+    const [isRevealed, setIsRevealed] = useState(false);
+    const [isFrozen, setIsFrozen] = useState(false);
+    const [walletMsg, setWalletMsg] = useState("");
+
+    const [sliderInternet, setSliderInternet] = useState(3500000);
+    const [sliderDatafono, setSliderDatafono] = useState(5000000);
+    const [sliderCajeros, setSliderCajeros] = useState(2000000);
+
+    const [montoAvance, setMontoAvance] = useState(2000000);
+    const [cuotasAvance, setCuotasAvance] = useState(12);
+    const [avanceMsg, setAvanceMsg] = useState("");
+
+    const cardInfo = {
+      credito: {
+        name: 'Javer-IA Black Titanium',
+        badge: 'VIP Master',
+        numberMasked: '•••• •••• •••• 8842',
+        numberReal: '4912 8831 2940 8842',
+        expiry: '09/29',
+        cvv: '784',
+        total: '$ 12.000.000',
+        disponible: '$ 8.200.000',
+        utilizado: '$ 3.800.000',
+        nacional: '$ 3.000.000',
+        internacional: '$ 800.000',
+        nacPct: '25%',
+        intPct: '6.6%',
+        dispPct: '68.4%'
+      },
+      debito: {
+        name: 'Javer-IA Débito Ahorros',
+        badge: 'Clásica Javeriana',
+        numberMasked: '•••• •••• •••• 5541',
+        numberReal: '4152 4492 1190 5541',
+        expiry: '11/28',
+        cvv: '312',
+        total: '$ 4.520.000',
+        disponible: '$ 4.520.000',
+        utilizado: '$ 0',
+        nacional: '$ 0',
+        internacional: '$ 0',
+        nacPct: '0%',
+        intPct: '0%',
+        dispPct: '100%'
+      }
+    };
+
+    const currentCard = cardInfo[cardType];
+
+    // Avance cuota calc
+    const tasaMensual = 0.0182;
+    const cuotaCalculada = montoAvance > 0 
+      ? Math.round((montoAvance * (tasaMensual * Math.pow(1 + tasaMensual, cuotasAvance))) / (Math.pow(1 + tasaMensual, cuotasAvance) - 1))
+      : 0;
+
+    const handleWalletEnroll = (wallet) => {
+      setWalletMsg(`Generando Device PAN Criptográfico para ${wallet}...`);
+      setTimeout(() => {
+        setWalletMsg(`¡Tarjeta enrolada exitosamente en ${wallet}! Ya puedes pagar con biometría NFC.`);
+      }, 1500);
+    };
+
+    const handleExecuteAvance = () => {
+      setAvanceMsg(`Procesando dispersión inmediata de $ ${new Intl.NumberFormat('es-CO').format(montoAvance)} COP a ${cuotasAvance} meses...`);
+      setTimeout(() => {
+        setAvanceMsg("¡Desembolso Exitoso! Fondos disponibles en cuenta seleccionada con cero comisión oculta.");
+      }, 1500);
+    };
+
+    return (
+      <div class="flex flex-col w-full gap-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2">
+          <div class="flex flex-col gap-1">
+            <div class="flex items-center gap-2">
+              <span class="font-label-caps text-label-caps text-tertiary uppercase tracking-widest">C4: Tarjetas &amp; Motor Financiero</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+              <span class="font-label-code text-body-sm text-on-surface-variant">ms-card-orchestrator v4.2</span>
+            </div>
+            <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">Gestión de Tarjetas, Límites &amp; Crédito VIP</h1>
+            <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
+              Control de plásticos físicos y virtuales de Sara Rodríguez. Configuración de seguridad instantánea, simulación de amortizaciones sin costos ocultos y pasarela de tokenización biométrica.
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button
+              class={`px-4 py-2 rounded-lg font-body-md text-body-md transition-all ${
+                cardType === 'debito' ? 'bg-primary-container text-primary shadow-md' : 'bg-surface-container text-on-surface-variant hover:text-on-surface'
+              }`}
+              onClick={() => setCardType('debito')}
+              type="button"
+            >
+              Débito Preferente
+            </button>
+            <button
+              class={`px-4 py-2 rounded-lg font-body-md text-body-md transition-all ${
+                cardType === 'credito' ? 'bg-primary-container text-primary shadow-md' : 'bg-surface-container text-on-surface-variant hover:text-on-surface'
+              }`}
+              onClick={() => setCardType('credito')}
+              type="button"
+            >
+              Black Titanium VIP (Crédito)
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Card Visual & Security Switches */}
+          <div class="lg:col-span-5 flex flex-col gap-6">
+            <div class="relative w-full aspect-[1.586/1] perspective-1000 group">
+              <div
+                class={`relative w-full h-full duration-500 transform-style-preserve-3d transition-transform cursor-pointer shadow-xl rounded-2xl ${
+                  isFlipped ? '[transform:rotateY(180deg)]' : ''
+                }`}
+                onClick={() => setIsFlipped(!isFlipped)}
+              >
+                {/* Front Side */}
+                <div class="absolute inset-0 w-full h-full rounded-2xl p-6 flex flex-col justify-between overflow-hidden bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-lowest text-on-surface backface-hidden">
+                  <div class="absolute -right-8 -top-8 w-44 h-44 rounded-full bg-secondary-container/10 blur-3xl pointer-events-none"></div>
+                  <div class="absolute -left-8 -bottom-8 w-44 h-44 rounded-full bg-tertiary/10 blur-3xl pointer-events-none"></div>
+                  <div class="flex items-start justify-between relative z-10">
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-secondary text-2xl">contactless</span>
+                      <span class="font-label-caps text-label-caps uppercase tracking-wider text-secondary px-2 py-0.5 rounded bg-surface-container-lowest/70">
+                        {currentCard.name}
+                      </span>
+                    </div>
+                    <div class="flex flex-col items-end">
+                      <span class="font-headline-sm text-headline-sm tracking-tight text-on-surface">Javeriana</span>
+                      <span class="font-label-caps text-label-caps text-tertiary uppercase">{currentCard.badge}</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-4 relative z-10 my-auto">
+                    <div class="w-11 h-8 rounded bg-gradient-to-tr from-tertiary to-tertiary-fixed opacity-80 flex items-center justify-center shadow-sm">
+                      <div class="w-7 h-5 rounded-sm bg-surface-container-lowest/30"></div>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-label-code text-body-sm text-on-surface-variant">Chip Criptográfico SHA-3</span>
+                      <span class="font-label-numeric-md text-label-numeric-md tracking-wider text-on-surface">
+                        {isRevealed ? currentCard.numberReal : currentCard.numberMasked}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="flex items-end justify-between relative z-10 pt-2">
+                    <div class="flex flex-col">
+                      <span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Titular</span>
+                      <span class="font-headline-sm text-headline-sm text-on-surface tracking-wide">SARA RODRÍGUEZ</span>
+                    </div>
+                    <div class="flex items-end gap-5">
+                      <div class="flex flex-col text-right">
+                        <span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Vence</span>
+                        <span class="font-label-numeric-md text-label-numeric-md text-on-surface">{currentCard.expiry}</span>
+                      </div>
+                      <div class="w-9 h-9 rounded-full bg-error/80 flex items-center justify-center -space-x-3">
+                        <div class="w-6 h-6 rounded-full bg-error mix-blend-screen opacity-90"></div>
+                        <div class="w-6 h-6 rounded-full bg-tertiary mix-blend-screen opacity-90"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Back Side */}
+                <div class="absolute inset-0 w-full h-full rounded-2xl flex flex-col justify-between overflow-hidden bg-surface-container-high text-on-surface [transform:rotateY(180deg)] backface-hidden">
+                  <div class="w-full h-11 bg-surface-container-lowest mt-5"></div>
+                  <div class="px-6 flex flex-col gap-3">
+                    <div class="flex items-center justify-between bg-surface-container-low px-4 py-2 rounded">
+                      <span class="font-label-code text-body-sm text-on-surface-variant">Firma Digital Verificada</span>
+                      <div class="flex items-center gap-2">
+                        <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">CVV Dinámico:</span>
+                        <span class="font-label-numeric-md text-label-numeric-md text-tertiary tracking-widest font-bold">{currentCard.cvv}</span>
+                        <span class="material-symbols-outlined text-sm text-secondary animate-spin">refresh</span>
+                      </div>
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant text-justify">
+                      Esta tarjeta es emitida bajo autorización de Superintendencia Financiera. Su uso está sujeto a los protocolos de seguridad C4 Javer-IA-nos.
+                    </p>
+                  </div>
+                  <div class="px-6 pb-4 flex justify-between items-center">
+                    <span class="font-label-code text-body-sm text-outline">Token: 994-01-BK</span>
+                    <span class="font-label-caps text-label-caps uppercase text-secondary">Red Privada Javeriana</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between px-2">
+              <button class="flex items-center gap-1.5 font-body-sm text-body-sm text-secondary hover:text-primary transition-colors" onClick={() => setIsFlipped(!isFlipped)} type="button">
+                <span class="material-symbols-outlined text-lg">flip</span>
+                <span>Girar tarjeta (Ver CVV)</span>
+              </button>
+              <button class="flex items-center gap-1.5 font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" onClick={() => setIsRevealed(!isRevealed)} type="button">
+                <span class="material-symbols-outlined text-lg">{isRevealed ? "visibility_off" : "visibility"}</span>
+                <span>{isRevealed ? "Ocultar datos" : "Revelar datos sensibles"}</span>
+              </button>
+            </div>
+
+            {/* Freeze Switch */}
+            <div class="p-5 rounded-2xl bg-surface-container flex flex-col gap-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center">
+                    <span class={`material-symbols-outlined ${isFrozen ? 'text-error' : 'text-tertiary'}`}>
+                      {isFrozen ? 'lock' : 'lock_open'}
+                    </span>
+                  </div>
+                  <div class="flex flex-col">
+                    <span class="font-headline-sm text-headline-sm text-on-surface">Interruptor de Congelamiento</span>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant">
+                      {isFrozen ? "Tarjeta CONGELADA temporalmente (CU-20)" : "Protección inmediata contra fraudes (CU-20)"}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  class={`relative inline-flex h-7 w-14 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out ${isFrozen ? 'bg-error' : 'bg-secondary-container'}`}
+                  onClick={() => setIsFrozen(!isFrozen)}
+                  type="button"
+                >
+                  <span class={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-on-secondary shadow-md transition duration-200 ease-in-out mt-0.5 ml-0.5 ${isFrozen ? 'translate-x-1' : 'translate-x-7'}`}></span>
+                </button>
+              </div>
+              {isFrozen && (
+                <div class="p-3 rounded-lg bg-error-container text-on-error-container text-body-sm font-body-sm flex items-center gap-2">
+                  <span class="material-symbols-outlined text-lg text-error">warning</span>
+                  <span>Tarjeta congelada. Se han suspendido todas las autorizaciones presenciales y en línea.</span>
+                </div>
+              )}
+            </div>
+
+            {/* Wallet Integration */}
+            <div class="p-5 rounded-2xl bg-surface-container flex flex-col gap-3">
+              <span class="font-headline-sm text-headline-sm text-on-surface">Billeteras Digitales Externas (CU-29)</span>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">Sincroniza tu plástico en segundos con token criptográfico NFC.</p>
+              <div class="grid grid-cols-2 gap-3 pt-1">
+                <button class="flex items-center justify-center gap-2 p-3 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-all" onClick={() => handleWalletEnroll('Apple Pay')} type="button">
+                  <span class="material-symbols-outlined text-lg">phone_iphone</span>
+                  <span class="font-body-md text-body-md font-medium">Apple Wallet</span>
+                </button>
+                <button class="flex items-center justify-center gap-2 p-3 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-all" onClick={() => handleWalletEnroll('Google Pay')} type="button">
+                  <span class="material-symbols-outlined text-lg">account_balance_wallet</span>
+                  <span class="font-body-md text-body-md font-medium">Google Pay</span>
+                </button>
+              </div>
+              {walletMsg && (
+                <div class="p-2.5 rounded-lg bg-surface-container-low text-secondary font-label-code text-body-sm text-center">
+                  {walletMsg}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right Panel: Limits, Quotas & Amortization */}
+          <div class="lg:col-span-7 flex flex-col gap-6">
+            <div class="p-6 rounded-2xl bg-surface-container flex flex-col gap-6">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex flex-col">
+                  <span class="font-label-caps text-label-caps uppercase text-secondary">Cupo Total Otorgado (CU-21)</span>
+                  <div class="flex items-baseline gap-2">
+                    <span class="font-label-numeric-lg text-headline-xl text-on-surface">{currentCard.total}</span>
+                    <span class="font-label-code text-body-sm text-on-surface-variant">COP</span>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  <div class="flex flex-col p-3 rounded-xl bg-surface-container-high">
+                    <span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Cupo Disponible</span>
+                    <span class="font-label-numeric-md text-label-numeric-md text-primary">{currentCard.disponible}</span>
+                  </div>
+                  <div class="flex flex-col p-3 rounded-xl bg-surface-container-high">
+                    <span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Cupo Utilizado</span>
+                    <span class="font-label-numeric-md text-label-numeric-md text-tertiary">{currentCard.utilizado}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <div class="w-full bg-surface-container-lowest h-3 rounded-full overflow-hidden flex">
+                  <div class="h-full bg-primary" style={{ width: currentCard.nacPct }}></div>
+                  <div class="h-full bg-tertiary" style={{ width: currentCard.intPct }}></div>
+                  <div class="h-full bg-surface-container-highest" style={{ width: currentCard.dispPct }}></div>
+                </div>
+                <div class="flex flex-wrap items-center justify-between text-body-sm font-body-sm text-on-surface-variant pt-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+                    <span>Nacionales: <strong class="text-on-surface font-label-numeric-md">{currentCard.nacional}</strong></span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+                    <span>Internacionales: <strong class="text-on-surface font-label-numeric-md">{currentCard.internacional}</strong></span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-surface-container-highest"></span>
+                    <span>Disponible: <strong class="text-on-surface font-label-numeric-md">{currentCard.disponible}</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                <div class="p-3.5 rounded-xl bg-surface-container-low flex flex-col gap-1">
+                  <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Fecha de Corte</span>
+                  <span class="font-headline-sm text-headline-sm text-on-surface">15 de Cada Mes</span>
+                  <span class="font-body-sm text-body-sm text-secondary">Faltan 4 días para corte</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-surface-container-low flex flex-col gap-1">
+                  <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Límite de Pago</span>
+                  <span class="font-headline-sm text-headline-sm text-tertiary">02 del Mes Sig.</span>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">Sin cobro de mora</span>
+                </div>
+                <div class="p-3.5 rounded-xl bg-surface-container-low flex flex-col gap-1">
+                  <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Pago Mínimo Actual</span>
+                  <span class="font-label-numeric-md text-label-numeric-md text-on-surface">$ 284.500 COP</span>
+                  <span class="font-body-sm text-body-sm text-secondary underline cursor-pointer" onClick={() => alert("Pasarela de pago de tarjeta...")}>Pagar ahora</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Transaction Limits Sliders (CU-19) */}
+            <div class="p-6 rounded-2xl bg-surface-container flex flex-col gap-5">
+              <div class="flex items-center justify-between">
+                <div class="flex flex-col">
+                  <span class="font-headline-sm text-headline-sm text-on-surface">Topes &amp; Límites Diarios (CU-19)</span>
+                  <span class="font-body-sm text-body-sm text-on-surface-variant">Define el monto máximo permitido por canal.</span>
+                </div>
+                <button class="px-3 py-1.5 rounded-lg bg-surface-container-high text-secondary hover:bg-surface-container-highest font-body-sm text-body-sm transition-colors" onClick={() => alert("Topes sincronizados con el núcleo C4 (SLA 99.99%).")} type="button">
+                  Guardar Topes
+                </button>
+              </div>
+
+              <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center justify-between font-body-md text-body-md">
+                    <span class="text-on-surface flex items-center gap-2">
+                      <span class="material-symbols-outlined text-base text-secondary">shopping_cart</span>
+                      Compras por Internet &amp; E-commerce
+                    </span>
+                    <span class="font-label-numeric-md text-on-surface">$ {new Intl.NumberFormat('es-CO').format(sliderInternet)} COP</span>
+                  </div>
+                  <input class="w-full accent-secondary cursor-pointer bg-surface-container-lowest rounded-lg h-2" max="8000000" min="500000" step="250000" type="range" value={sliderInternet} onChange={e => setSliderInternet(Number(e.target.value))}/>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center justify-between font-body-md text-body-md">
+                    <span class="text-on-surface flex items-center gap-2">
+                      <span class="material-symbols-outlined text-base text-secondary">point_of_sale</span>
+                      Datáfonos y Establecimientos Físicos
+                    </span>
+                    <span class="font-label-numeric-md text-on-surface">$ {new Intl.NumberFormat('es-CO').format(sliderDatafono)} COP</span>
+                  </div>
+                  <input class="w-full accent-secondary cursor-pointer bg-surface-container-lowest rounded-lg h-2" max="10000000" min="1000000" step="500000" type="range" value={sliderDatafono} onChange={e => setSliderDatafono(Number(e.target.value))}/>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center justify-between font-body-md text-body-md">
+                    <span class="text-on-surface flex items-center gap-2">
+                      <span class="material-symbols-outlined text-base text-secondary">atm</span>
+                      Retiros en Cajeros Automáticos (ATM)
+                    </span>
+                    <span class="font-label-numeric-md text-on-surface">$ {new Intl.NumberFormat('es-CO').format(sliderCajeros)} COP</span>
+                  </div>
+                  <input class="w-full accent-secondary cursor-pointer bg-surface-container-lowest rounded-lg h-2" max="4000000" min="200000" step="200000" type="range" value={sliderCajeros} onChange={e => setSliderCajeros(Number(e.target.value))}/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Avance Cash & Transparency Grid */}
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div class="lg:col-span-6 p-6 rounded-2xl bg-surface-container flex flex-col gap-5">
+            <div class="flex items-center justify-between pb-2">
+              <div class="flex flex-col">
+                <span class="font-label-caps text-label-caps text-tertiary uppercase">Simulador Inmediato (CU-23)</span>
+                <span class="font-headline-sm text-headline-sm text-on-surface">Avance de Efectivo a Cuenta de Ahorros</span>
+              </div>
+              <div class="p-2 rounded-xl bg-surface-container-high">
+                <span class="material-symbols-outlined text-secondary">savings</span>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-4">
+              <div class="flex flex-col gap-1.5">
+                <label class="font-body-sm text-body-sm text-on-surface-variant">Monto a Desembolsar (Máx: $ 8.200.000 COP)</label>
+                <div class="relative">
+                  <span class="absolute left-4 top-3.5 font-label-numeric-md text-body-md text-on-surface-variant">$</span>
+                  <input
+                    class="w-full pl-9 pr-4 py-3 rounded-xl bg-surface-container-low text-on-surface font-label-numeric-md focus:outline-none focus:ring-1 focus:ring-secondary"
+                    max="8200000" min="100000" step="50000" type="number"
+                    value={montoAvance} onChange={e => setMontoAvance(Number(e.target.value))}
+                  />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1.5">
+                  <label class="font-body-sm text-body-sm text-on-surface-variant">Número de Cuotas</label>
+                  <select class="w-full px-3 py-3 rounded-xl bg-surface-container-low text-on-surface font-body-md focus:outline-none" value={cuotasAvance} onChange={e => setCuotasAvance(Number(e.target.value))}>
+                    <option value="6">6 Meses</option>
+                    <option value="12">12 Meses</option>
+                    <option value="24">24 Meses</option>
+                    <option value="36">36 Meses</option>
+                  </select>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label class="font-body-sm text-body-sm text-on-surface-variant">Cuenta Destino</label>
+                  <select class="w-full px-3 py-3 rounded-xl bg-surface-container-low text-on-surface font-body-md focus:outline-none">
+                    <option value="ahorros-5541">Ahorros Javer-IA (•• 5541)</option>
+                    <option value="bolsillo-semestre">Bolsillo Matrícula (•• 1022)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="p-4 rounded-xl bg-surface-container-low flex flex-col gap-3">
+                <div class="flex justify-between items-center text-body-sm font-body-sm">
+                  <span class="text-on-surface-variant">Tasa Mensual Vencida (M.V.)</span>
+                  <span class="font-label-numeric-md text-on-surface">1.82% M.V. (24.10% E.A.)</span>
+                </div>
+                <div class="flex justify-between items-center text-body-sm font-body-sm">
+                  <span class="text-on-surface-variant">Cuota Mensual Estimada</span>
+                  <span class="font-label-numeric-md text-headline-sm text-tertiary">$ {new Intl.NumberFormat('es-CO').format(cuotaCalculada)} COP</span>
+                </div>
+              </div>
+              <button class="w-full py-3.5 px-4 rounded-xl bg-secondary-container hover:bg-secondary text-on-secondary font-headline-sm text-headline-sm tracking-wide transition-all shadow-md flex items-center justify-center gap-2" onClick={handleExecuteAvance} type="button">
+                <span class="material-symbols-outlined text-xl">bolt</span>
+                <span>Desembolsar Inmediato a Cuenta</span>
+              </button>
+              {avanceMsg && (
+                <div class="p-3 rounded-lg bg-surface-container-high text-primary font-body-sm text-center">
+                  {avanceMsg}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* CU-31 Transparency */}
+          <div class="lg:col-span-6 p-6 rounded-2xl bg-surface-container flex flex-col gap-5">
+            <div class="flex items-center justify-between pb-2">
+              <div class="flex flex-col">
+                <span class="font-label-caps text-label-caps text-primary uppercase">Transparencia Financiera (CU-31)</span>
+                <span class="font-headline-sm text-headline-sm text-on-surface">Desglose de Tasas, Costos &amp; Exenciones</span>
+              </div>
+              <div class="p-2 rounded-xl bg-surface-container-high">
+                <span class="material-symbols-outlined text-primary">verified</span>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div class="p-3 rounded-xl bg-surface-container-low flex flex-col">
+                <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Tasa E.A.</span>
+                <span class="font-label-numeric-md text-headline-sm text-on-surface">24.10%</span>
+                <span class="font-body-sm text-body-sm text-on-surface-variant">Usura: 27.50%</span>
+              </div>
+              <div class="p-3 rounded-xl bg-surface-container-low flex flex-col">
+                <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Exención 4x1000</span>
+                <span class="font-headline-sm text-headline-sm text-secondary">Activa</span>
+                <span class="font-body-sm text-body-sm text-on-surface-variant">Hasta 350 UVT</span>
+              </div>
+              <div class="p-3 rounded-xl bg-surface-container-low flex flex-col">
+                <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Cuota Manejo</span>
+                <span class="font-label-numeric-md text-headline-sm text-primary">$ 0</span>
+                <span class="font-body-sm text-body-sm text-on-surface-variant">Beca VIP</span>
+              </div>
+              <div class="p-3 rounded-xl bg-surface-container-low flex flex-col">
+                <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Seguro Fraude</span>
+                <span class="font-label-numeric-md text-headline-sm text-primary">Incluido</span>
+                <span class="font-body-sm text-body-sm text-on-surface-variant">Cobertura 100%</span>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <span class="font-headline-sm text-headline-sm text-on-surface">Amortización Tipo: Compras a 3 Cuotas</span>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left font-body-sm text-body-sm">
+                  <thead class="text-on-surface-variant font-label-caps text-label-caps uppercase bg-surface-container-low">
+                    <tr>
+                      <th class="p-2.5 rounded-l-lg">Cuota #</th>
+                      <th class="p-2.5">Abono Capital</th>
+                      <th class="p-2.5">Intereses (1.82%)</th>
+                      <th class="p-2.5 rounded-r-lg text-right">Total Cuota</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-on-surface divide-y divide-surface-container-high">
+                    <tr>
+                      <td class="p-2.5 font-label-numeric-md text-on-surface-variant">Mes 1 (15 Oct)</td>
+                      <td class="p-2.5 font-label-numeric-md">$ 333.333</td>
+                      <td class="p-2.5 font-label-numeric-md text-tertiary">$ 18.200</td>
+                      <td class="p-2.5 font-label-numeric-md text-right font-semibold">$ 351.533</td>
+                    </tr>
+                    <tr>
+                      <td class="p-2.5 font-label-numeric-md text-on-surface-variant">Mes 2 (15 Nov)</td>
+                      <td class="p-2.5 font-label-numeric-md">$ 333.333</td>
+                      <td class="p-2.5 font-label-numeric-md text-tertiary">$ 12.133</td>
+                      <td class="p-2.5 font-label-numeric-md text-right font-semibold">$ 345.466</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // SCREEN 4: Inversiones, Financiero, Auditoría & CRM (Screen ID: 512fda29d82a40af98b2024f7d2a1a97)
+  function InversionesFinancieroScreen({ defaultTab = "cdt" }) {
+    const [currentTab, setCurrentTab] = useState(defaultTab);
+
+    // CDT States
+    const [cdtAmount, setCdtAmount] = useState(5000000);
+    const [cdtTerm, setCdtTerm] = useState(180);
+    const [showCDTModal, setShowCDTModal] = useState(false);
+
+    const ratesByTerm = {
+      90: 0.1140,
+      180: 0.1165,
+      360: 0.1180
+    };
+
+    const rateEA = ratesByTerm[cdtTerm];
+    const periodicRate = Math.pow(1 + rateEA, cdtTerm / 365) - 1;
+    const grossInterest = cdtAmount * periodicRate;
+    const retention = grossInterest * 0.04;
+    const netInterest = grossInterest - retention;
+    const totalAmount = cdtAmount + netInterest;
+
+    // Loan States
+    const [loanAmount, setLoanAmount] = useState(8000000);
+    const [loanMonths, setLoanMonths] = useState(24);
+
+    const monthlyRate = 0.0145;
+    const monthlyPayment = (loanAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -loanMonths));
+    const totalInterest = (monthlyPayment * loanMonths) - loanAmount;
+
+    // PQRS State
+    const [pqrsType, setPqrsType] = useState("transaccion_no_reconocida");
+    const [pqrsDesc, setPqrsDesc] = useState("");
+
+    const handlePqrs = (e) => {
+      e.preventDefault();
+      alert(`CU-04 / CU-05: Solicitud radicada exitosamente: PQRS-2025-${Math.floor(1000 + Math.random() * 9000)}-JAV.`);
+      setPqrsDesc("");
+    };
+
+    return (
+      <div class="flex flex-col w-full">
+        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4 pb-6">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-label-caps text-label-caps uppercase text-secondary tracking-widest">Servicios Financieros &amp; Gobernanza</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+              <span class="font-label-code text-body-sm text-on-surface-variant">Core v2.4.1 (C4 Dynamic)</span>
+            </div>
+            <h1 class="font-headline-lg text-headline-lg text-on-surface mt-1">Gestión Financiera, Auditoría &amp; CRM</h1>
+          </div>
+          <div class="flex items-center gap-3 bg-surface-container-low px-4 py-2 rounded-xl">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+              <span class="font-label-code text-body-sm text-on-surface">ms-inversiones: ACTIVE</span>
+            </div>
+            <span class="text-outline-variant font-label-code">|</span>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-secondary"></span>
+              <span class="font-label-code text-body-sm text-on-surface">ms-creditos: SYNC</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Tab Navigation */}
+        <div class="flex overflow-x-auto gap-2 p-1.5 bg-surface-container rounded-2xl mb-8">
+          <button
+            class={`financial-tab-btn flex items-center gap-2.5 px-5 py-3 rounded-xl font-headline-sm text-headline-sm transition-all ${
+              currentTab === 'cdt' ? 'bg-surface-container-high text-on-surface shadow-md' : 'text-on-surface-variant hover:text-on-surface'
+            }`}
+            onClick={() => setCurrentTab('cdt')}
+            type="button"
+          >
+            <span class="material-symbols-outlined text-secondary text-lg">savings</span>
+            <span>Inversiones &amp; CDT Digital (CU-12)</span>
+          </button>
+          <button
+            class={`financial-tab-btn flex items-center gap-2.5 px-5 py-3 rounded-xl font-headline-sm text-headline-sm transition-all ${
+              currentTab === 'loans' ? 'bg-surface-container-high text-on-surface shadow-md' : 'text-on-surface-variant hover:text-on-surface'
+            }`}
+            onClick={() => setCurrentTab('loans')}
+            type="button"
+          >
+            <span class="material-symbols-outlined text-lg">account_balance</span>
+            <span>Créditos Javerianos (CU-13)</span>
+          </button>
+          <button
+            class={`financial-tab-btn flex items-center gap-2.5 px-5 py-3 rounded-xl font-headline-sm text-headline-sm transition-all ${
+              currentTab === 'audit' ? 'bg-surface-container-high text-on-surface shadow-md' : 'text-on-surface-variant hover:text-on-surface'
+            }`}
+            onClick={() => setCurrentTab('audit')}
+            type="button"
+          >
+            <span class="material-symbols-outlined text-lg">security</span>
+            <span>Auditoría &amp; Dispositivos (ASR-03 / CU-17)</span>
+          </button>
+          <button
+            class={`financial-tab-btn flex items-center gap-2.5 px-5 py-3 rounded-xl font-headline-sm text-headline-sm transition-all ${
+              currentTab === 'crm' ? 'bg-surface-container-high text-on-surface shadow-md' : 'text-on-surface-variant hover:text-on-surface'
+            }`}
+            onClick={() => setCurrentTab('crm')}
+            type="button"
+          >
+            <span class="material-symbols-outlined text-lg">support_agent</span>
+            <span>Radicación PQRS &amp; CRM (CU-04 / CU-05)</span>
+          </button>
+        </div>
+
+        {/* TAB 1: CDT */}
+        {currentTab === 'cdt' && (
+          <section class="flex flex-col gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+              <div class="lg:col-span-8 bg-surface-container rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden shadow-xl">
+                <div class="relative z-10 flex flex-col gap-4">
+                  <div class="flex items-center gap-2">
+                    <span class="px-3 py-1 bg-surface-container-high rounded-full font-label-caps text-label-caps text-tertiary uppercase tracking-wider">Tasa Preferencial</span>
+                    <span class="px-3 py-1 bg-secondary-container/20 text-secondary rounded-full font-label-caps text-label-caps uppercase">100% Desmaterializado Deceval</span>
+                  </div>
+                  <h2 class="font-headline-xl text-headline-xl text-on-surface max-w-xl">Haz crecer tu patrimonio con CDT Tasa Fija 11.8% E.A.</h2>
+                  <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                    Apertura inmediata sincronizada con tu cuenta de ahorros. Protegido por el seguro de depósitos FOGAFÍN hasta $50.000.000 COP.
+                  </p>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-6 bg-surface-container-lowest/50 p-4 rounded-2xl">
+                  <div>
+                    <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Tasa Vigente</span>
+                    <div class="font-label-numeric-lg text-label-numeric-lg text-tertiary">11.80% <span class="text-body-sm font-label-caps text-on-surface-variant">E.A.</span></div>
+                  </div>
+                  <div>
+                    <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Monto Mínimo</span>
+                    <div class="font-label-numeric-lg text-label-numeric-lg text-on-surface">$500.000</div>
+                  </div>
+                  <div>
+                    <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Retención Fuente</span>
+                    <div class="font-label-numeric-lg text-label-numeric-lg text-secondary">4.0%</div>
+                  </div>
+                  <div>
+                    <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Garantía</span>
+                    <div class="font-label-numeric-lg text-label-numeric-lg text-on-surface">Fogafín 100%</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="lg:col-span-4 bg-surface-container-high rounded-3xl p-6 flex flex-col justify-between shadow-xl">
+                <div class="flex items-center justify-between pb-4">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary">account_balance_wallet</span>
+                    <span class="font-headline-sm text-headline-sm text-on-surface">Mis Títulos Vigentes</span>
+                  </div>
+                  <span class="font-label-code text-label-code text-secondary bg-surface-container-lowest px-2 py-1 rounded">1 Activo</span>
+                </div>
+                <div class="bg-surface-container p-4 rounded-2xl flex flex-col gap-3">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">CDT-JAV-2024-8841</span>
+                      <div class="font-headline-sm text-headline-sm text-on-surface mt-0.5">$ 12.000.000 COP</div>
+                    </div>
+                    <span class="px-2 py-0.5 bg-surface-container-lowest text-secondary rounded-full font-label-caps text-label-caps">90 DÍAS</span>
+                  </div>
+                  <div class="w-full bg-surface-container-lowest h-2 rounded-full overflow-hidden">
+                    <div class="bg-secondary h-full rounded-full w-3/4"></div>
+                  </div>
+                  <span class="font-label-code text-body-sm text-on-surface-variant text-right">Día 68 de 90 transcurridos</span>
+                </div>
+                <button class="w-full mt-4 py-2.5 rounded-xl bg-surface-container text-on-surface hover:bg-surface-bright font-headline-sm text-body-md transition-colors flex items-center justify-center gap-2" onClick={() => alert("Descargando Certificado Deceval...")} type="button">
+                  <span class="material-symbols-outlined text-sm">download</span>
+                  <span>Descargar Certificado Deceval</span>
+                </button>
+              </div>
+            </div>
+
+            {/* CDT Calculator */}
+            <div class="bg-surface-container rounded-3xl p-8 shadow-2xl">
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-7 flex flex-col gap-6">
+                  <div class="flex flex-col gap-2">
+                    <div class="flex justify-between items-center">
+                      <label class="font-headline-sm text-body-md text-on-surface">Monto a Invertir (COP)</label>
+                      <span class="font-label-numeric-lg text-label-numeric-lg text-secondary">$ {new Intl.NumberFormat('es-CO').format(cdtAmount)} COP</span>
+                    </div>
+                    <input class="w-full h-2 bg-surface-container-high rounded-lg appearance-none cursor-pointer accent-secondary" max="50000000" min="500000" step="500000" type="range" value={cdtAmount} onChange={e => setCdtAmount(Number(e.target.value))}/>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <label class="font-headline-sm text-body-md text-on-surface">Plazo de Constitución</label>
+                    <div class="grid grid-cols-3 gap-3">
+                      {[90, 180, 360].map((term) => (
+                        <button
+                          key={term}
+                          class={`p-4 rounded-2xl flex flex-col items-center gap-1 transition-all ${
+                            cdtTerm === term ? 'bg-secondary-container text-on-secondary-container shadow-md' : 'bg-surface-container-high text-on-surface'
+                          }`}
+                          onClick={() => setCdtTerm(term)}
+                          type="button"
+                        >
+                          <span class="font-label-numeric-lg text-label-numeric-lg">{term}</span>
+                          <span class="font-label-caps text-label-caps uppercase">{term === 90 ? 'Trimestral' : term === 180 ? 'Semestral' : 'Anual'}</span>
+                          <span class="font-label-code text-body-sm">{(ratesByTerm[term] * 100).toFixed(2)}% E.A.</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="lg:col-span-5 bg-surface-container-lowest p-6 rounded-3xl flex flex-col justify-between shadow-inner">
+                  <div class="flex flex-col gap-3">
+                    <div class="flex justify-between py-2">
+                      <span class="font-body-md text-on-surface-variant">Capital Inicial</span>
+                      <span class="font-label-numeric-md text-on-surface">$ {new Intl.NumberFormat('es-CO').format(cdtAmount)} COP</span>
+                    </div>
+                    <div class="flex justify-between py-2">
+                      <span class="font-body-md text-on-surface-variant">Interés Bruto Generado</span>
+                      <span class="font-label-numeric-md text-tertiary">+$ {new Intl.NumberFormat('es-CO').format(Math.round(grossInterest))} COP</span>
+                    </div>
+                    <div class="flex justify-between py-2">
+                      <span class="font-body-md text-on-surface-variant">Retención Fuente (4%)</span>
+                      <span class="font-label-numeric-md text-error">-$ {new Intl.NumberFormat('es-CO').format(Math.round(retention))} COP</span>
+                    </div>
+                    <div class="bg-surface-container p-4 rounded-2xl mt-3 flex justify-between items-center">
+                      <div class="flex flex-col">
+                        <span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Rendimiento Neto</span>
+                        <span class="font-label-numeric-lg text-label-numeric-lg text-tertiary">+$ {new Intl.NumberFormat('es-CO').format(Math.round(netInterest))} COP</span>
+                      </div>
+                      <div class="text-right">
+                        <span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Total Final</span>
+                        <div class="font-label-numeric-lg text-label-numeric-lg text-on-surface font-bold">$ {new Intl.NumberFormat('es-CO').format(Math.round(totalAmount))} COP</div>
+                      </div>
+                    </div>
+                  </div>
+                  <button class="w-full mt-6 py-4 rounded-2xl bg-secondary text-on-secondary font-headline-sm text-body-md hover:bg-secondary-fixed transition-all flex items-center justify-center gap-2 shadow-lg" onClick={() => setShowCDTModal(true)} type="button">
+                    <span class="material-symbols-outlined">add_task</span>
+                    <span>Constituir CDT 100% Digital</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* CDT Modal */}
+            {showCDTModal && (
+              <div class="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-md p-4">
+                <div class="bg-surface-container-high max-w-md w-full rounded-3xl p-8 flex flex-col gap-6 shadow-2xl">
+                  <div class="w-16 h-16 rounded-2xl bg-secondary-container/20 text-secondary flex items-center justify-center mx-auto">
+                    <span class="material-symbols-outlined text-4xl">check_circle</span>
+                  </div>
+                  <div class="text-center">
+                    <span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">CU-12 Apertura Exitosa</span>
+                    <h3 class="font-headline-lg text-headline-lg text-on-surface mt-1">¡CDT Digital Constituido!</h3>
+                    <p class="font-body-md text-body-md text-on-surface-variant mt-2">
+                      El débito automático fue aplicado con éxito. Tu certificado desmaterializado ha sido emitido con custodia oficial Deceval.
+                    </p>
+                  </div>
+                  <button class="w-full py-3.5 rounded-xl bg-secondary text-on-secondary font-headline-sm text-body-md hover:bg-secondary-fixed transition-colors" onClick={() => setShowCDTModal(false)} type="button">
+                    Entendido y Regresar
+                  </button>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* TAB 2: LOANS */}
+        {currentTab === 'loans' && (
+          <section class="flex flex-col gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div class="lg:col-span-7 bg-surface-container rounded-3xl p-8 flex flex-col gap-6 shadow-xl">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">CU-13: Scoring &amp; Desembolso</span>
+                    <h2 class="font-headline-lg text-headline-lg text-on-surface">Crédito Educativo &amp; Libre Inversión</h2>
+                  </div>
+                  <div class="flex items-center gap-1.5 px-3 py-1 bg-surface-container-high text-secondary rounded-full font-label-code text-body-sm">
+                    <span class="material-symbols-outlined text-sm">speed</span>
+                    <span>Bureau Score: 785</span>
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-5">
+                  <div>
+                    <div class="flex justify-between">
+                      <label class="font-headline-sm text-body-md text-on-surface">Monto Solicitado</label>
+                      <span class="font-label-numeric-lg text-label-numeric-lg text-on-surface">$ {new Intl.NumberFormat('es-CO').format(loanAmount)} COP</span>
+                    </div>
+                    <input class="w-full h-2 bg-surface-container-high rounded-lg appearance-none cursor-pointer accent-secondary mt-2" max="25000000" min="1000000" step="500000" type="range" value={loanAmount} onChange={e => setLoanAmount(Number(e.target.value))}/>
+                  </div>
+                  <div>
+                    <div class="flex justify-between items-center">
+                      <label class="font-headline-sm text-body-md text-on-surface">Plazo de Amortización</label>
+                      <span class="font-label-numeric-md text-secondary">{loanMonths} Cuotas</span>
+                    </div>
+                    <input class="w-full h-2 bg-surface-container-high rounded-lg appearance-none cursor-pointer accent-secondary mt-2" max="48" min="6" step="6" type="range" value={loanMonths} onChange={e => setLoanMonths(Number(e.target.value))}/>
+                  </div>
+                </div>
+                <button class="w-full py-4 rounded-2xl bg-secondary text-on-secondary font-headline-sm text-body-md hover:bg-secondary-fixed transition-all flex items-center justify-center gap-2 shadow-lg mt-2" onClick={() => alert(`CU-13: Validación Bureau aprobada. Se han desembolsado $ ${new Intl.NumberFormat('es-CO').format(loanAmount)} COP en su cuenta.`)} type="button">
+                  <span class="material-symbols-outlined">payments</span>
+                  <span>Aprobar y Desembolsar Inmediatamente en Cuenta</span>
+                </button>
+              </div>
+
+              <div class="lg:col-span-5 bg-surface-container-high rounded-3xl p-6 flex flex-col justify-between shadow-xl">
+                <div>
+                  <div class="flex items-center justify-between pb-4">
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface">Plan de Pagos Estimado</h3>
+                    <span class="font-label-code text-body-sm text-tertiary">Tasa: 1.45% M.V.</span>
+                  </div>
+                  <div class="bg-surface-container-low p-4 rounded-2xl mb-4 flex items-center justify-between">
+                    <div>
+                      <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Cuota Mensual Fija</span>
+                      <div class="font-label-numeric-lg text-label-numeric-lg text-secondary">$ {new Intl.NumberFormat('es-CO').format(Math.round(monthlyPayment))} COP</div>
+                    </div>
+                    <div class="text-right">
+                      <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Interés Total</span>
+                      <div class="font-label-numeric-md text-on-surface">$ {new Intl.NumberFormat('es-CO').format(Math.round(totalInterest))} COP</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* TAB 3: AUDITORIA */}
+        {currentTab === 'audit' && (
+          <section class="flex flex-col gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div class="lg:col-span-5 bg-surface-container rounded-3xl p-6 flex flex-col gap-6 shadow-xl">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary">devices</span>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface">Dispositivos Confiables (CU-17)</h3>
+                  </div>
+                  <span class="px-2 py-0.5 bg-surface-container-high rounded text-secondary font-label-code text-body-sm">2 Registrados</span>
+                </div>
+                <div class="flex flex-col gap-3">
+                  <div class="bg-surface-container-high p-4 rounded-2xl flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-secondary">
+                        <span class="material-symbols-outlined">laptop_mac</span>
+                      </div>
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <span class="font-headline-sm text-body-md text-on-surface">MacBook Pro 16"</span>
+                          <span class="px-2 py-0.5 bg-secondary/20 text-secondary rounded-full font-label-caps text-label-caps">Actual</span>
+                        </div>
+                        <div class="font-label-code text-body-sm text-on-surface-variant">IP: 181.61.204.18 · TLS 1.3</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bg-surface-container-high p-4 rounded-2xl flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-tertiary">
+                        <span class="material-symbols-outlined">smartphone</span>
+                      </div>
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <span class="font-headline-sm text-body-md text-on-surface">iPhone 15 Pro</span>
+                          <span class="px-2 py-0.5 bg-surface-container text-on-surface-variant rounded-full font-label-caps text-label-caps">FaceID</span>
+                        </div>
+                        <div class="font-label-code text-body-sm text-on-surface-variant">UDID: 8841-A92B</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="lg:col-span-7 bg-surface-container rounded-3xl p-6 flex flex-col justify-between shadow-xl">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary">terminal</span>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface">Registro Inmutable de Eventos (ASR-03)</h3>
+                  </div>
+                  <span class="font-label-caps text-label-caps text-secondary uppercase">Live Sink</span>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left font-body-sm">
+                    <thead class="font-label-code text-on-surface-variant bg-surface-container-high">
+                      <tr>
+                        <th class="p-3">Marca Temporal</th>
+                        <th class="p-3">Evento</th>
+                        <th class="p-3 text-right">Resultado</th>
+                      </tr>
+                    </thead>
+                    <tbody class="font-label-code text-body-sm">
+                      <tr class="hover:bg-surface-container-high/40">
+                        <td class="p-3 text-on-surface-variant">2025-05-18 10:44:12</td>
+                        <td class="p-3"><span class="text-secondary">CU-12</span> Apertura CDT #9941</td>
+                        <td class="p-3 text-right"><span class="px-2 py-0.5 bg-secondary-container/30 text-secondary rounded-full font-label-caps text-label-caps">SUCCESS 200</span></td>
+                      </tr>
+                      <tr class="hover:bg-surface-container-high/40">
+                        <td class="p-3 text-on-surface-variant">2025-05-18 09:12:05</td>
+                        <td class="p-3"><span class="text-on-surface">CU-15</span> Autenticación OAuth2 / JWT</td>
+                        <td class="p-3 text-right"><span class="px-2 py-0.5 bg-secondary-container/30 text-secondary rounded-full font-label-caps text-label-caps">SUCCESS 200</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* TAB 4: CRM / PQRS */}
+        {currentTab === 'crm' && (
+          <section class="flex flex-col gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div class="lg:col-span-6 bg-surface-container rounded-3xl p-8 flex flex-col gap-6 shadow-xl">
+                <div>
+                  <span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">CU-04: Módulo CRM &amp; Defensoría</span>
+                  <h2 class="font-headline-lg text-headline-lg text-on-surface">Radicar Reclamación o PQRS</h2>
+                </div>
+                <form class="flex flex-col gap-4" onSubmit={handlePqrs}>
+                  <div>
+                    <label class="font-headline-sm text-body-md text-on-surface">Tipo de Solicitud</label>
+                    <select class="w-full mt-1.5 p-3.5 bg-surface-container-low rounded-xl text-on-surface font-body-md focus:outline-none" value={pqrsType} onChange={e => setPqrsType(e.target.value)}>
+                      <option value="transaccion_no_reconocida">Transacción No Reconocida (CU-05)</option>
+                      <option value="cobro_indebido">Revisión de Cobros o Comisiones</option>
+                      <option value="falla_tecnica">Incidencia en Plataforma</option>
+                      <option value="felicitacion_peticion">Petición General o Consulta</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="font-headline-sm text-body-md text-on-surface">Descripción Detallada</label>
+                    <textarea class="w-full mt-1.5 p-3.5 bg-surface-container-low rounded-xl text-on-surface font-body-md focus:outline-none resize-none" rows="4" placeholder="Describa el motivo..." required value={pqrsDesc} onChange={e => setPqrsDesc(e.target.value)}></textarea>
+                  </div>
+                  <button class="w-full py-4 rounded-2xl bg-secondary text-on-secondary font-headline-sm text-body-md hover:bg-secondary-fixed transition-all flex items-center justify-center gap-2 shadow-lg mt-2" type="submit">
+                    <span class="material-symbols-outlined">send</span>
+                    <span>Generar Radicado Único y Notificar</span>
+                  </button>
+                </form>
+              </div>
+
+              {/* Virtual Assistant Chat (CU-02) */}
+              <div class="lg:col-span-6 bg-surface-container rounded-3xl p-6 flex flex-col justify-between shadow-xl">
+                <div class="flex items-center justify-between pb-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-secondary-container flex items-center justify-center text-secondary">
+                      <span class="material-symbols-outlined text-xl">smart_toy</span>
+                    </div>
+                    <div>
+                      <span class="font-headline-sm text-body-md text-on-surface">Asesor Virtual Javer-IA (CU-02)</span>
+                      <div class="flex items-center gap-1.5 font-label-code text-body-sm text-secondary">
+                        <span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                        <span>En línea 24/7</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2.5 py-3 overflow-y-auto max-h-44 pr-1">
+                  <div class="self-start max-w-[85%] bg-surface-container-high p-3 rounded-2xl rounded-tl-sm text-body-sm text-on-surface">
+                    ¡Hola Sara! Veo que revisas tu portafolio financiero. ¿Deseas asesoría personalizada para tu radicado PQRS o sobre la tasa de tu CDT?
+                  </div>
+                </div>
+                <div class="pt-2 flex items-center gap-2">
+                  <input class="flex-1 bg-surface-container-low p-3 rounded-xl text-on-surface font-body-md focus:outline-none text-body-sm" placeholder="Escribe tu consulta al Asesor Virtual..." type="text"/>
+                  <button class="p-3 bg-secondary text-on-secondary rounded-xl hover:bg-secondary-fixed transition-colors flex items-center justify-center" onClick={() => alert("Mensaje procesado por el modelo LLM Javer-IA...")} type="button">
+                    <span class="material-symbols-outlined text-lg">send</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+      </div>
+    );
+  }
+
+  // Root Application Component
+  function App() {
+    return (
+      <MemoryRouter initialEntries={["/"]}>
+        <Header />
+        <main class="w-full pt-20 bg-background flex-1 max-w-7xl mx-auto px-6 lg:px-12 py-space-lg">
+          <Routes>
+            <Route path="/" element={<InicioCuentasScreen />} />
+            <Route path="/inicio-cuentas" element={<InicioCuentasScreen />} />
+            <Route path="/transacciones-pagos" element={<TransaccionesPagosScreen />} />
+            <Route path="/tarjetas-creditos" element={<TarjetasCreditosScreen />} />
+            <Route path="/inversiones-financiero" element={<InversionesFinancieroScreen defaultTab="cdt" />} />
+            <Route path="/auditoria-seguridad-crm" element={<InversionesFinancieroScreen defaultTab="audit" />} />
+          </Routes>
+        </main>
+        <Footer />
+      </MemoryRouter>
+    );
+  }
+
+  const rootElement = document.getElementById("root");
+  const root = createRoot(rootElement);
+  root.render(<App />);
+</script>
+
+</body>
+</html>

@@ -1,55 +1,51 @@
 {
   "name": "@javer-ia-nos/ui-shared",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/src/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/src/index.d.ts"
-    },
-    "./hooks": {
-      "import": "./dist/hooks/index.js",
-      "types": "./dist/src/hooks/index.d.ts"
-    },
-    "./types": {
-      "import": "./dist/types/index.js",
-      "types": "./dist/src/types/index.d.ts"
-    },
-    "./utils": {
-      "import": "./dist/utils/index.js",
-      "types": "./dist/src/utils/index.d.ts"
-    },
-    "./components": {
-      "import": "./dist/components/index.js",
-      "types": "./dist/src/components/index.d.ts"
-    }
+  "browser": {
+    "./components.js": "./dist/components-web/index.js"
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "components.js",
+    "components.d.ts",
+    "hooks.js",
+    "hooks.d.ts",
+    "utils.js",
+    "utils.d.ts",
+    "types.js",
+    "types.d.ts"
   ],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
-    "react-native": "*"
+    "react-native": "*",
+    "nativewind": ">=4.0.0",
+    "tailwindcss": ">3.3.0",
+    "@expo/vector-icons": ">=14.0.0"
   },
   "devDependencies": {
+    "@expo/vector-icons": "14.0.4",
     "@types/bun": "latest",
     "@types/react": "^18.3.18",
     "@types/react-native": "^0.73.0",
+    "nativewind": "^4.2.7",
     "react": "^18.3.1",
     "react-native": "^0.76.0",
+    "tailwindcss": "^3.4.19",
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "build:js": "bun build ./src/index.ts ./src/hooks/index.ts ./src/utils/index.ts ./src/types/index.ts ./src/components/index.ts --outdir ./dist --external react --external react-native",
+    "build:js": "bun build ./src/index.ts ./src/hooks/index.ts ./src/utils/index.ts ./src/types/index.ts ./src/components/index.ts --outdir ./dist --external react --external react-native --external nativewind --external @expo/vector-icons --production",
+    "build:js:web": "bun ./scripts/build-web.mjs",
     "build:types": "tsc --declaration --emitDeclarationOnly --outDir ./dist",
-    "build": "bun run build:js && bun run build:types",
+    "build": "bun run build:js && bun run build:js:web && bun run build:types",
     "test": "bun test",
     "typecheck": "tsc --noEmit"
   }

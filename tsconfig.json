@@ -5,6 +5,16 @@
     "module": "Preserve",
     "moduleDetection": "force",
     "jsx": "react-jsx",
+    // Sin esto, el JSX compilado importa `jsx`/`jsxDEV` de "react/jsx-runtime" y el
+    // wrapping que hace `cssInterop` (ver nativewindSetup.ts) nunca se activa: ese
+    // wrapping vive en el createElement de "nativewind/jsx-runtime" (reexport de
+    // react-native-css-interop), que intercepta cada elemento creado y sustituye
+    // View/Text/etc. por la versión envuelta que sabe traducir `className`. Con el
+    // runtime de JSX normal de React, `className` le llega a los componentes de
+    // react-native-web tal cual y se descarta en silencio (no es una prop que
+    // reenvíen). Esto es lo que hacía que Tailwind "no cargara" en la web pese a que
+    // el CSS generado por @astrojs/tailwind era correcto.
+    "jsxImportSource": "nativewind",
     "allowJs": true,
     "types": ["bun"],
 
@@ -22,5 +32,5 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true
   },
-  "include": ["src/**/*", "test/**/*"]
+  "include": ["src/**/*", "test/**/*", "nativewind-env.d.ts"]
 }

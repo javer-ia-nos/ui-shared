@@ -1,6 +1,7 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { View, Text, Pressable } from "react-native";
 import { formatearMoneda, enmascararCuenta } from "../utils";
+import { Icono } from "./Icono";
 
 export interface TarjetaSaldoProps {
   numeroCuenta: string;
@@ -10,7 +11,9 @@ export interface TarjetaSaldoProps {
 }
 
 /**
- * Tarjeta de presentación de saldo universal (Web y Móvil).
+ * "Hero card" de saldo consolidado (mockup Stitch, Pantalla 1). Fase 1 usa un color
+ * sólido de la paleta en vez del gradiente CSS del mockup (`bg-gradient-to-br`), que
+ * NativeWind no traduce a `background-image` sobre `View` — ver plan de la Fase 1.
  */
 export function TarjetaSaldo({
   numeroCuenta,
@@ -18,60 +21,37 @@ export function TarjetaSaldo({
   saldoDisponible,
   moneda = "COP",
 }: TarjetaSaldoProps) {
+  const [oculto, setOculto] = useState(false);
+
   return (
-    <View style={styles.card} accessible={true} accessibilityRole="summary">
-      <View style={styles.header}>
-        <Text style={styles.tipo}>{tipoCuenta === "AHORROS" ? "Cuenta de Ahorros" : "Cuenta Corriente"}</Text>
-        <Text style={styles.numero}>{enmascararCuenta(numeroCuenta)}</Text>
+    <View
+      className="bg-surface-container-high rounded-3xl p-6"
+      accessible={true}
+      accessibilityRole="summary"
+    >
+      <View className="flex-row items-center justify-between mb-3">
+        <Text className="font-label-caps text-label-caps uppercase tracking-widest text-primary">
+          {tipoCuenta === "AHORROS" ? "Cuenta de Ahorros" : "Cuenta Corriente"}
+        </Text>
+        <Text className="font-label-code text-label-code text-on-surface-variant">
+          {enmascararCuenta(numeroCuenta)}
+        </Text>
       </View>
-      <View style={styles.body}>
-        <Text style={styles.etiqueta}>Saldo disponible</Text>
-        <Text style={styles.monto}>{formatearMoneda(saldoDisponible, moneda)}</Text>
+
+      <Text className="font-body-sm text-body-sm text-on-surface-variant mb-1">Saldo disponible</Text>
+      <View className="flex-row items-center gap-3">
+        <Text className="font-label-numeric-lg text-headline-xl text-on-surface tracking-tight">
+          {oculto ? "••••••••••••" : formatearMoneda(saldoDisponible, moneda)}
+        </Text>
+        <Pressable
+          onPress={() => setOculto(!oculto)}
+          accessibilityRole="button"
+          accessibilityLabel={oculto ? "Mostrar saldo" : "Ocultar saldo"}
+          className="p-1"
+        >
+          <Icono nombre={oculto ? "visibility_off" : "visibility"} color="#c4c6cf" />
+        </Pressable>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-    shadowColor: "#000000",
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 12,
-  },
-  tipo: {
-    fontSize: 14,
-    color: "#555555",
-    fontWeight: "500",
-  },
-  numero: {
-    fontSize: 14,
-    color: "#777777",
-    fontFamily: "monospace",
-  },
-  body: {
-    marginTop: 4,
-  },
-  etiqueta: {
-    fontSize: 12,
-    color: "#888888",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  monto: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#004884",
-    marginTop: 4,
-  },
-});
