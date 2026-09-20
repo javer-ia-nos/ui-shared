@@ -32,3 +32,41 @@ export interface ApiResponse<T> {
   error?: string;
   status: number;
 }
+
+// --- ms-seguridad ---
+
+export interface UsuarioSesion {
+  id: string;
+  email: string;
+  rol: string;
+}
+
+export interface LoginResultado {
+  token: string;
+  usuario: UsuarioSesion;
+}
+
+// CU-17: estado de confianza vigente de un dispositivo (null = nunca se
+// estableció, fue revocada, o venció).
+export interface DispositivoConfianza {
+  confiable: boolean;
+  verificadoEn: string;
+  expiraEn: string;
+}
+
+export interface Dispositivo {
+  id: string;
+  usuarioId: string;
+  fingerprint: string;
+  nombre: string | null;
+  plataforma: string | null;
+  registradoEn: string;
+  activo: boolean;
+  confianza: DispositivoConfianza | null;
+}
+
+export interface LimitesTransaccion {
+  usuarioId: string;
+  limiteDiario: number;
+  limitePorOperacion: number;
+}
