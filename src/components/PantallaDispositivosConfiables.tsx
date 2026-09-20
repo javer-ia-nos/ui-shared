@@ -13,6 +13,7 @@ import type { Dispositivo } from "../types";
 export interface PantallaDispositivosConfiablesProps {
   usuarioId: string;
   apiBaseUrl?: string;
+  token?: string;
 }
 
 // Genera (y persiste en localStorage) un fingerprint estable para EL NAVEGADOR
@@ -76,8 +77,12 @@ function TarjetaDispositivo({ dispositivo, onRevocar }: { dispositivo: Dispositi
 }
 
 /** CU-17: registro, consulta y revocación de dispositivos confiables. */
-export function PantallaDispositivosConfiables({ usuarioId, apiBaseUrl }: PantallaDispositivosConfiablesProps) {
-  const { dispositivos, cargando, error, cargar, registrar, revocar } = useDispositivos({ usuarioId, apiBaseUrl });
+export function PantallaDispositivosConfiables({ usuarioId, apiBaseUrl, token }: PantallaDispositivosConfiablesProps) {
+  const { dispositivos, cargando, error, cargar, registrar, revocar } = useDispositivos({
+    usuarioId,
+    apiBaseUrl,
+    token,
+  });
   const [nombre, setNombre] = useState("Navegador de prueba");
   const [plataforma, setPlataforma] = useState("web");
   const [fingerprint] = useState(obtenerFingerprintLocal);

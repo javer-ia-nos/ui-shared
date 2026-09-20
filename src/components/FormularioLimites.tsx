@@ -10,11 +10,12 @@ import { formatearMoneda } from "../utils";
 export interface FormularioLimitesProps {
   usuarioId: string;
   apiBaseUrl?: string;
+  token?: string;
 }
 
 /** CU-19: topes y límites diarios / por operación. */
-export function FormularioLimites({ usuarioId, apiBaseUrl }: FormularioLimitesProps) {
-  const { limites, cargando, error, cargar, actualizar } = useLimites({ usuarioId, apiBaseUrl });
+export function FormularioLimites({ usuarioId, apiBaseUrl, token }: FormularioLimitesProps) {
+  const { limites, cargando, error, cargar, actualizar } = useLimites({ usuarioId, apiBaseUrl, token });
   const [limiteDiario, setLimiteDiario] = useState("");
   const [limitePorOperacion, setLimitePorOperacion] = useState("");
   const [guardado, setGuardado] = useState(false);

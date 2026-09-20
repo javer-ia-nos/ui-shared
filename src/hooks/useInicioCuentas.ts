@@ -5,12 +5,14 @@ import type {
   MovimientoResumen,
   CertificadoResumen,
 } from "../components/PantallaInicioCuentas";
+import { encabezadosAuth } from "../utils";
 
 export interface UseInicioCuentasOptions {
   usuarioId: string;
   apiCuentasUrl?: string;
   apiTransaccionesUrl?: string;
   apiFinancieroUrl?: string;
+  token?: string;
 }
 
 function mapCuenta(raw: any, tipoCuenta: "AHORROS" | "CORRIENTE"): CuentaResumen {
@@ -71,6 +73,7 @@ export function useInicioCuentas({
   apiCuentasUrl = "/api/cuentas",
   apiTransaccionesUrl = "/api/transacciones",
   apiFinancieroUrl = "/api/financiero",
+  token,
 }: UseInicioCuentasOptions) {
   const [cuentas, setCuentas] = useState<CuentaResumen[]>([]);
   const [bolsillos, setBolsillos] = useState<BolsilloResumen[]>([]);
@@ -84,10 +87,11 @@ export function useInicioCuentas({
     setCargando(true);
     setError(null);
     try {
+      const authHeaders = encabezadosAuth(token);
       const [corrientesRes, ahorrosRes, certificadosRes] = await Promise.all([
-        fetch(`${apiCuentasUrl}/cuentas/corrientes?userId=${usuarioId}`),
-        fetch(`${apiCuentasUrl}/cuentas/ahorros?userId=${usuarioId}`),
-        fetch(`${apiFinancieroUrl}/financiero/certificados?usuarioId=${usuarioId}`),
+        fetch(`${apiCuentasUrl}/cuentas/corrientes?userId=${usuarioId}`, { headers: authHeaders }),
+        fetch(`${apiCuentasUrl}/cuentas/ahorros?userId=${usuarioId}`, { headers: authHeaders }),
+        fetch(`${apiFinancieroUrl}/financiero/certificados?usuarioId=${usuarioId}`, { headers: authHeaders }),
       ]);
 
       const corrientes = corrientesRes.ok ? await corrientesRes.json() : [];
@@ -103,7 +107,9 @@ export function useInicioCuentas({
 
       const subResultados = await Promise.all(
         todasCuentas.map((c) =>
-          fetch(`${apiCuentasUrl}/cuentas/${c.id}/subcuentas`).then((r) => (r.ok ? r.json() : null))
+          fetch(`${apiCuentasUrl}/cuentas/${c.id}/subcuentas`, { headers: authHeaders }).then((r) =>
+            r.ok ? r.json() : null
+          )
         )
       );
       setBolsillos(
@@ -114,7 +120,9 @@ export function useInicioCuentas({
 
       const movResultados = await Promise.all(
         todasCuentas.map((c) =>
-          fetch(`${apiTransaccionesUrl}/pagos-fisicos/cuenta/${c.id}`).then((r) => (r.ok ? r.json() : []))
+          fetch(`${apiTransaccionesUrl}/pagos-fisicos/cuenta/${c.id}`, { headers: authHeaders }).then((r) =>
+            r.ok ? r.json() : []
+          )
         )
       );
       setMovimientos(movResultados.flat().map(mapMovimiento));
@@ -123,19 +131,19 @@ export function useInicioCuentas({
     } finally {
       setCargando(false);
     }
-  }, [usuarioId, apiCuentasUrl, apiTransaccionesUrl, apiFinancieroUrl]);
+  }, [usuarioId, apiCuentasUrl, apiTransaccionesUrl, apiFinancieroUrl, token]);
 
   const generarCertificado = useCallback(
     async (tipoCertificado: string) => {
       const res = await fetch(`${apiFinancieroUrl}/financiero/certificados`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...encabezadosAuth(token) },
         body: JSON.stringify({ usuarioId, tipoCertificado }),
       });
       if (res.ok) await cargar();
       return res.ok;
     },
-    [usuarioId, apiFinancieroUrl, cargar]
+    [usuarioId, apiFinancieroUrl, token, cargar]
   );
 
   return { cuentas, bolsillos, movimientos, certificados, cargando, error, cargar, generarCertificado };

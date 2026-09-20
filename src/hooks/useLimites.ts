@@ -1,13 +1,15 @@
 import { useState, useCallback } from "react";
 import type { LimitesTransaccion } from "../types";
+import { encabezadosAuth } from "../utils";
 
 export interface UseLimitesOptions {
   usuarioId: string;
   apiBaseUrl?: string;
+  token?: string;
 }
 
-/** Hook headless para CU-19 (topes/límites diarios y por operación). */
-export function useLimites({ usuarioId, apiBaseUrl }: UseLimitesOptions) {
+/** Hook headless para CU-19 (topes/límites diarios y por operación), vía api-gateway. */
+export function useLimites({ usuarioId, apiBaseUrl, token }: UseLimitesOptions) {
   const baseUrl = apiBaseUrl ?? "/api/seguridad";
   const [limites, setLimites] = useState<LimitesTransaccion | null>(null);
   const [cargando, setCargando] = useState(false);
@@ -18,7 +20,9 @@ export function useLimites({ usuarioId, apiBaseUrl }: UseLimitesOptions) {
     setCargando(true);
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/limites/${usuarioId}`);
+      const res = await fetch(`${baseUrl}/limites/${usuarioId}`, {
+        headers: encabezadosAuth(token),
+      });
       if (res.status === 404) {
         setLimites(null);
         return;
@@ -30,7 +34,7 @@ export function useLimites({ usuarioId, apiBaseUrl }: UseLimitesOptions) {
     } finally {
       setCargando(false);
     }
-  }, [usuarioId, baseUrl]);
+  }, [usuarioId, baseUrl, token]);
 
   const actualizar = useCallback(
     async (limiteDiario: number, limitePorOperacion: number) => {
@@ -39,7 +43,7 @@ export function useLimites({ usuarioId, apiBaseUrl }: UseLimitesOptions) {
       try {
         const res = await fetch(`${baseUrl}/limites/${usuarioId}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...encabezadosAuth(token) },
           body: JSON.stringify({ limiteDiario, limitePorOperacion }),
         });
         const body = await res.json().catch(() => ({}));
@@ -53,7 +57,7 @@ export function useLimites({ usuarioId, apiBaseUrl }: UseLimitesOptions) {
         setCargando(false);
       }
     },
-    [usuarioId, baseUrl, cargar]
+    [usuarioId, baseUrl, token, cargar]
   );
 
   return { limites, cargando, error, cargar, actualizar };

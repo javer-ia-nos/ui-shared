@@ -39,3 +39,13 @@ export function enmascararCuenta(cuenta: string): string {
   if (limpia.length <= 4) return limpia;
   return `**** ${limpia.slice(-4)}`;
 }
+
+/**
+ * Header Authorization para llamadas autenticadas contra api-gateway (que
+ * exige sesión válida en toda ruta que no sea /health o /seguridad/auth/*).
+ * Sin token, se omite — la petición sigue haciéndose (útil para rutas
+ * públicas) y api-gateway la rechaza con 401 si de verdad la necesitaba.
+ */
+export function encabezadosAuth(token?: string): Record<string, string> {
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}

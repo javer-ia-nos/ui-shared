@@ -1,8 +1,10 @@
 import { useState, useCallback } from "react";
 import type { TransferenciaPayload } from "../types";
+import { encabezadosAuth } from "../utils";
 
 export interface UseTransferenciaOptions {
   apiBaseUrl?: string;
+  token?: string;
   onSuccess?: (resultado: any) => void;
   onError?: (error: string) => void;
 }
@@ -58,7 +60,7 @@ export function useTransferencia(options: UseTransferenciaOptions = {}) {
       const baseUrl = options.apiBaseUrl ?? "/api/transacciones";
       const res = await fetch(`${baseUrl}/transferencias`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...encabezadosAuth(options.token) },
         body: JSON.stringify(payload),
       });
 
