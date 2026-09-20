@@ -8,7 +8,7 @@ export interface UseLimitesOptions {
 
 /** Hook headless para CU-19 (topes/límites diarios y por operación). */
 export function useLimites({ usuarioId, apiBaseUrl }: UseLimitesOptions) {
-  const baseUrl = apiBaseUrl || "http://localhost:4863";
+  const baseUrl = apiBaseUrl ?? "/api/seguridad";
   const [limites, setLimites] = useState<LimitesTransaccion | null>(null);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);

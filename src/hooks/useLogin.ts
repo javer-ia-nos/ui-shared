@@ -29,7 +29,7 @@ export function useLogin(options: UseLoginOptions = {}) {
     setError(null);
 
     try {
-      const baseUrl = options.apiBaseUrl || "http://localhost:4863";
+      const baseUrl = options.apiBaseUrl ?? "/api/seguridad";
       const res = await fetch(`${baseUrl}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

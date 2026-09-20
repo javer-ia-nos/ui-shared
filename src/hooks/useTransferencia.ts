@@ -55,7 +55,7 @@ export function useTransferencia(options: UseTransferenciaOptions = {}) {
     };
 
     try {
-      const baseUrl = options.apiBaseUrl || "http://localhost:4862";
+      const baseUrl = options.apiBaseUrl ?? "/api/transacciones";
       const res = await fetch(`${baseUrl}/transferencias`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

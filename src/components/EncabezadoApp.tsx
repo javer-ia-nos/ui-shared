@@ -28,8 +28,8 @@ export function EncabezadoApp({
   items,
   rutaActiva,
   onNavegar,
-  nombreUsuario = "Sara Rodríguez",
-  rolUsuario = "Estudiante Javeriana",
+  nombreUsuario,
+  rolUsuario,
   onNotificaciones,
   onCerrarSesion,
 }: EncabezadoAppProps) {
@@ -74,18 +74,22 @@ export function EncabezadoApp({
         >
           <Icono nombre="notifications" color="#c4c6cf" />
         </Pressable>
-        <View className="items-end hidden md:flex">
-          <Text className="font-body-md text-body-md text-on-surface font-medium">{nombreUsuario}</Text>
-          <Text className="font-body-sm text-body-sm text-on-surface-variant">{rolUsuario}</Text>
-        </View>
-        <Pressable
-          onPress={onCerrarSesion}
-          accessibilityRole="button"
-          accessibilityLabel="Cerrar sesión"
-          className="p-1.5"
-        >
-          <Icono nombre="logout" color="#c4c6cf" />
-        </Pressable>
+        {nombreUsuario && (
+          <View className="items-end hidden md:flex">
+            <Text className="font-body-md text-body-md text-on-surface font-medium">{nombreUsuario}</Text>
+            {rolUsuario && <Text className="font-body-sm text-body-sm text-on-surface-variant">{rolUsuario}</Text>}
+          </View>
+        )}
+        {onCerrarSesion && (
+          <Pressable
+            onPress={onCerrarSesion}
+            accessibilityRole="button"
+            accessibilityLabel="Cerrar sesión"
+            className="p-1.5"
+          >
+            <Icono nombre="logout" color="#c4c6cf" />
+          </Pressable>
+        )}
       </View>
     </View>
   );

@@ -11,7 +11,7 @@ export interface UseDispositivosOptions {
  * revocación contra ms-seguridad.
  */
 export function useDispositivos({ usuarioId, apiBaseUrl }: UseDispositivosOptions) {
-  const baseUrl = apiBaseUrl || "http://localhost:4863";
+  const baseUrl = apiBaseUrl ?? "/api/seguridad";
   const [dispositivos, setDispositivos] = useState<Dispositivo[]>([]);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
