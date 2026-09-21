@@ -1,9 +1,9 @@
 import { useState, useCallback } from "react";
-import type { LoginResultado } from "../types";
+import type { LoginResult } from "../types";
 
 export interface UseLoginOptions {
   apiBaseUrl?: string;
-  onSuccess?: (resultado: LoginResultado) => void;
+  onSuccess?: (resultado: LoginResult) => void;
   onError?: (error: string) => void;
 }
 
@@ -17,7 +17,9 @@ export function useLogin(options: UseLoginOptions = {}) {
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const iniciarSesion = useCallback(async (): Promise<LoginResultado | undefined> => {
+  const iniciarSesion = useCallback(async (): Promise<
+    LoginResult | undefined
+  > => {
     if (!email || !password) {
       const msg = "Email y contraseña son requeridos";
       setError(msg);
@@ -38,10 +40,21 @@ export function useLogin(options: UseLoginOptions = {}) {
 
       const body = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(body.error || `No fue posible iniciar sesión (${res.status})`);
+        throw new Error(
+          body.error || `No fue posible iniciar sesión (${res.status})`,
+        );
       }
 
-      const resultado = body as LoginResultado;
+      const raw = body as any;
+      const resultado: LoginResult = {
+        token: raw.token,
+        user: raw.user ?? {
+          id: raw.usuario?.id,
+          email: raw.usuario?.email,
+          role: raw.usuario?.rol ?? "client",
+        },
+      };
+
       options.onSuccess?.(resultado);
       return resultado;
     } catch (err: any) {
@@ -53,5 +66,13 @@ export function useLogin(options: UseLoginOptions = {}) {
     }
   }, [email, password, options]);
 
-  return { email, setEmail, password, setPassword, cargando, error, iniciarSesion };
+  return {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    cargando,
+    error,
+    iniciarSesion,
+  };
 }

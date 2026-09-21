@@ -33,18 +33,23 @@ export interface ApiResponse<T> {
   status: number;
 }
 
-// --- ms-seguridad ---
+// --- ms-seguridad (Modelo canónico User de arch-description.typ) ---
 
-export interface UsuarioSesion {
+export interface UserSession {
   id: string;
   email: string;
-  rol: string;
+  role: string;
+  roles?: string[];
 }
 
-export interface LoginResultado {
+export interface LoginResult {
   token: string;
-  usuario: UsuarioSesion;
+  user: UserSession;
 }
+
+// Alias de retrocompatibilidad
+export type UsuarioSesion = UserSession;
+export type LoginResultado = LoginResult;
 
 // CU-17: estado de confianza vigente de un dispositivo (null = nunca se
 // estableció, fue revocada, o venció).

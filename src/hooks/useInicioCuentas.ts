@@ -8,19 +8,25 @@ import type {
 import { encabezadosAuth } from "../utils";
 
 export interface UseInicioCuentasOptions {
-  usuarioId: string;
+  userId?: string;
+  usuarioId?: string;
   apiCuentasUrl?: string;
   apiTransaccionesUrl?: string;
   apiFinancieroUrl?: string;
   token?: string;
 }
 
-function mapCuenta(raw: any, tipoCuenta: "AHORROS" | "CORRIENTE"): CuentaResumen {
+function mapCuenta(
+  raw: any,
+  tipoCuenta: "AHORROS" | "CORRIENTE",
+): CuentaResumen {
   return {
     id: raw.id,
     // Sin nombre "de fantasía": alias si el usuario le puso uno, si no una
     // etiqueta genérica derivada del tipo real de cuenta (accountType).
-    titulo: raw.alias || (tipoCuenta === "AHORROS" ? "Cuenta de Ahorros" : "Cuenta Corriente"),
+    titulo:
+      raw.alias ||
+      (tipoCuenta === "AHORROS" ? "Cuenta de Ahorros" : "Cuenta Corriente"),
     numeroCuenta: raw.accountNumber,
     tipoCuenta,
     saldoDisponible: Number(raw.balance),
@@ -29,11 +35,18 @@ function mapCuenta(raw: any, tipoCuenta: "AHORROS" | "CORRIENTE"): CuentaResumen
 }
 
 function mapBolsillo(raw: any): BolsilloResumen {
-  return { id: raw.id, nombre: raw.name, balance: Number(raw.balance), cuentaId: raw.parentAccountId };
+  return {
+    id: raw.id,
+    nombre: raw.name,
+    balance: Number(raw.balance),
+    cuentaId: raw.parentAccountId,
+  };
 }
 
 function mapMovimiento(raw: any): MovimientoResumen {
-  const esIngreso = raw.tipoOperacion === "CASH_DEPOSIT" || raw.tipoOperacion === "CHECK_DEPOSIT";
+  const esIngreso =
+    raw.tipoOperacion === "CASH_DEPOSIT" ||
+    raw.tipoOperacion === "CHECK_DEPOSIT";
   const ETIQUETAS: Record<string, string> = {
     CASH_DEPOSIT: "Depósito en efectivo",
     CHECK_DEPOSIT: "Depósito con cheque",
@@ -41,12 +54,9 @@ function mapMovimiento(raw: any): MovimientoResumen {
   };
   return {
     id: raw.id,
-    titulo: ETIQUETAS[raw.tipoOperacion] || raw.tipoOperacion,
-    // El listado (GET /pagos-fisicos/cuenta/:id) devuelve "descripcion", no
-    // "numeroComprobante" (ese solo viene en la respuesta de creación) — se usa
-    // lo que de verdad entrega cada endpoint, sin inventar un campo que falte.
-    detalle: raw.descripcion || `Sucursal ${raw.sucursalId} · Cajero ${raw.cajeroId}`,
-    fecha: raw.fecha,
+    titulo: ETIQUETAS[raw.tipoOperacion] ?? "Operación presencial",
+    detalle: `Comprobante #${raw.comprobanteNumero?.slice(0, 8) ?? "—"}`,
+    fecha: raw.fechaOperacion || new Date().toISOString(),
     monto: Number(raw.monto),
     esIngreso,
   };
@@ -69,12 +79,14 @@ function mapCertificado(raw: any): CertificadoResumen {
  * si un servicio no responde, esa sección queda vacía, no se inventa contenido.
  */
 export function useInicioCuentas({
+  userId,
   usuarioId,
   apiCuentasUrl = "/api/cuentas",
   apiTransaccionesUrl = "/api/transacciones",
   apiFinancieroUrl = "/api/financiero",
   token,
 }: UseInicioCuentasOptions) {
+  const effectiveUserId = userId ?? usuarioId ?? "";
   const [cuentas, setCuentas] = useState<CuentaResumen[]>([]);
   const [bolsillos, setBolsillos] = useState<BolsilloResumen[]>([]);
   const [movimientos, setMovimientos] = useState<MovimientoResumen[]>([]);
@@ -83,15 +95,22 @@ export function useInicioCuentas({
   const [error, setError] = useState<string | null>(null);
 
   const cargar = useCallback(async () => {
-    if (!usuarioId) return;
+    if (!effectiveUserId) return;
     setCargando(true);
     setError(null);
     try {
       const authHeaders = encabezadosAuth(token);
       const [corrientesRes, ahorrosRes, certificadosRes] = await Promise.all([
-        fetch(`${apiCuentasUrl}/cuentas/corrientes?userId=${usuarioId}`, { headers: authHeaders }),
-        fetch(`${apiCuentasUrl}/cuentas/ahorros?userId=${usuarioId}`, { headers: authHeaders }),
-        fetch(`${apiFinancieroUrl}/financiero/certificados?usuarioId=${usuarioId}`, { headers: authHeaders }),
+        fetch(`${apiCuentasUrl}/cuentas/corrientes?userId=${effectiveUserId}`, {
+          headers: authHeaders,
+        }),
+        fetch(`${apiCuentasUrl}/cuentas/ahorros?userId=${effectiveUserId}`, {
+          headers: authHeaders,
+        }),
+        fetch(
+          `${apiFinancieroUrl}/financiero/certificados?usuarioId=${effectiveUserId}`,
+          { headers: authHeaders },
+        ),
       ]);
 
       const corrientes = corrientesRes.ok ? await corrientesRes.json() : [];
@@ -107,23 +126,23 @@ export function useInicioCuentas({
 
       const subResultados = await Promise.all(
         todasCuentas.map((c) =>
-          fetch(`${apiCuentasUrl}/cuentas/${c.id}/subcuentas`, { headers: authHeaders }).then((r) =>
-            r.ok ? r.json() : null
-          )
-        )
+          fetch(`${apiCuentasUrl}/cuentas/${c.id}/subcuentas`, {
+            headers: authHeaders,
+          }).then((r) => (r.ok ? r.json() : null)),
+        ),
       );
       setBolsillos(
         subResultados
           .filter((r): r is { subcuentas: any[] } => r !== null)
-          .flatMap((r) => r.subcuentas.map(mapBolsillo))
+          .flatMap((r) => r.subcuentas.map(mapBolsillo)),
       );
 
       const movResultados = await Promise.all(
         todasCuentas.map((c) =>
-          fetch(`${apiTransaccionesUrl}/pagos-fisicos/cuenta/${c.id}`, { headers: authHeaders }).then((r) =>
-            r.ok ? r.json() : []
-          )
-        )
+          fetch(`${apiTransaccionesUrl}/pagos-fisicos/cuenta/${c.id}`, {
+            headers: authHeaders,
+          }).then((r) => (r.ok ? r.json() : [])),
+        ),
       );
       setMovimientos(movResultados.flat().map(mapMovimiento));
     } catch (err: any) {
@@ -131,20 +150,38 @@ export function useInicioCuentas({
     } finally {
       setCargando(false);
     }
-  }, [usuarioId, apiCuentasUrl, apiTransaccionesUrl, apiFinancieroUrl, token]);
+  }, [
+    effectiveUserId,
+    apiCuentasUrl,
+    apiTransaccionesUrl,
+    apiFinancieroUrl,
+    token,
+  ]);
 
   const generarCertificado = useCallback(
     async (tipoCertificado: string) => {
       const res = await fetch(`${apiFinancieroUrl}/financiero/certificados`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...encabezadosAuth(token) },
-        body: JSON.stringify({ usuarioId, tipoCertificado }),
+        headers: {
+          "Content-Type": "application/json",
+          ...encabezadosAuth(token),
+        },
+        body: JSON.stringify({ usuarioId: effectiveUserId, tipoCertificado }),
       });
       if (res.ok) await cargar();
       return res.ok;
     },
-    [usuarioId, apiFinancieroUrl, token, cargar]
+    [effectiveUserId, apiFinancieroUrl, token, cargar],
   );
 
-  return { cuentas, bolsillos, movimientos, certificados, cargando, error, cargar, generarCertificado };
+  return {
+    cuentas,
+    bolsillos,
+    movimientos,
+    certificados,
+    cargando,
+    error,
+    cargar,
+    generarCertificado,
+  };
 }

@@ -3,51 +3,66 @@ import type { LimitesTransaccion } from "../types";
 import { encabezadosAuth } from "../utils";
 
 export interface UseLimitesOptions {
-  usuarioId: string;
+  userId?: string;
+  usuarioId?: string;
   apiBaseUrl?: string;
   token?: string;
 }
 
 /** Hook headless para CU-19 (topes/límites diarios y por operación), vía api-gateway. */
-export function useLimites({ usuarioId, apiBaseUrl, token }: UseLimitesOptions) {
+export function useLimites({
+  userId,
+  usuarioId,
+  apiBaseUrl,
+  token,
+}: UseLimitesOptions) {
+  const effectiveUserId = userId ?? usuarioId ?? "";
   const baseUrl = apiBaseUrl ?? "/api/seguridad";
   const [limites, setLimites] = useState<LimitesTransaccion | null>(null);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const cargar = useCallback(async () => {
-    if (!usuarioId) return;
+    if (!effectiveUserId) return;
     setCargando(true);
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/limites/${usuarioId}`, {
+      const res = await fetch(`${baseUrl}/limites/${effectiveUserId}`, {
         headers: encabezadosAuth(token),
       });
       if (res.status === 404) {
         setLimites(null);
         return;
       }
-      if (!res.ok) throw new Error(`No fue posible consultar los límites (${res.status})`);
+      if (!res.ok)
+        throw new Error(`No fue posible consultar los límites (${res.status})`);
       setLimites((await res.json()) as LimitesTransaccion);
     } catch (err: any) {
       setError(err.message || "Error inesperado consultando límites");
     } finally {
       setCargando(false);
     }
-  }, [usuarioId, baseUrl, token]);
+  }, [effectiveUserId, baseUrl, token]);
 
   const actualizar = useCallback(
     async (limiteDiario: number, limitePorOperacion: number) => {
       setCargando(true);
       setError(null);
       try {
-        const res = await fetch(`${baseUrl}/limites/${usuarioId}`, {
+        const res = await fetch(`${baseUrl}/limites/${effectiveUserId}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json", ...encabezadosAuth(token) },
+          headers: {
+            "Content-Type": "application/json",
+            ...encabezadosAuth(token),
+          },
           body: JSON.stringify({ limiteDiario, limitePorOperacion }),
         });
         const body = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(body.error || `No fue posible actualizar los límites (${res.status})`);
+        if (!res.ok)
+          throw new Error(
+            body.error ||
+              `No fue posible actualizar los límites (${res.status})`,
+          );
         await cargar();
         return true;
       } catch (err: any) {
@@ -57,7 +72,7 @@ export function useLimites({ usuarioId, apiBaseUrl, token }: UseLimitesOptions) 
         setCargando(false);
       }
     },
-    [usuarioId, baseUrl, token, cargar]
+    [effectiveUserId, baseUrl, token, cargar],
   );
 
   return { limites, cargando, error, cargar, actualizar };

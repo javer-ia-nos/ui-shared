@@ -44,9 +44,9 @@
   "scripts": {
     "build:js": "bun build ./src/index.ts ./src/hooks/index.ts ./src/utils/index.ts ./src/types/index.ts ./src/components/index.ts --outdir ./dist --external react --external react-native --external nativewind --external @expo/vector-icons --production",
     "build:js:web": "bun ./scripts/build-web.mjs",
-    "build:types": "tsc --declaration --emitDeclarationOnly --outDir ./dist",
+    "build:types": "bun x tsc --declaration --emitDeclarationOnly --outDir ./dist",
     "build": "bun run build:js && bun run build:js:web && bun run build:types",
     "test": "bun test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "bun x tsc --noEmit"
   }
 }

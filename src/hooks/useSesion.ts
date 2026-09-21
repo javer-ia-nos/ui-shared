@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import type { LoginResultado } from "../types";
+import type { LoginResult } from "../types";
 
 const CLAVE_DEFAULT = "javerianos_sesion";
 
@@ -9,27 +9,45 @@ const CLAVE_DEFAULT = "javerianos_sesion";
  * el login al recargar mientras se prueba.
  */
 export function useSesion(clave: string = CLAVE_DEFAULT) {
-  const [sesion, setSesionState] = useState<LoginResultado | null>(null);
+  const [sesion, setSesionState] = useState<LoginResult | null>(null);
 
   useEffect(() => {
     try {
       const guardada = localStorage.getItem(clave);
-      if (guardada) setSesionState(JSON.parse(guardada));
+      if (guardada) {
+        const parsed = JSON.parse(guardada);
+        if (parsed.usuario && !parsed.user) {
+          parsed.user = {
+            id: parsed.usuario.id,
+            email: parsed.usuario.email,
+            role: parsed.usuario.rol,
+          };
+        }
+        setSesionState(parsed);
+      }
     } catch {
       // localStorage no disponible (SSR/incógnito estricto): queda deslogueado.
     }
   }, [clave]);
 
   const iniciar = useCallback(
-    (resultado: LoginResultado) => {
-      setSesionState(resultado);
+    (resultado: LoginResult) => {
+      const normalized: LoginResult = {
+        token: resultado.token,
+        user: (resultado as any).user ?? {
+          id: (resultado as any).usuario?.id,
+          email: (resultado as any).usuario?.email,
+          role: (resultado as any).usuario?.rol ?? "client",
+        },
+      };
+      setSesionState(normalized);
       try {
-        localStorage.setItem(clave, JSON.stringify(resultado));
+        localStorage.setItem(clave, JSON.stringify(normalized));
       } catch {
         /* no-op */
       }
     },
-    [clave]
+    [clave],
   );
 
   const cerrar = useCallback(() => {
