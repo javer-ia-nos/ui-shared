@@ -4,6 +4,7 @@ import { CampoTexto } from "./CampoTexto";
 import { BotonBancario } from "./BotonBancario";
 import { Superficie } from "./Superficie";
 import { Icono } from "./Icono";
+import { SelectorCuenta } from "./SelectorCuenta";
 import { useRecarga, type UseRecargaOptions, type OperadorMovil } from "../hooks/useRecarga";
 
 export interface FormularioRecargaProps extends UseRecargaOptions {}
@@ -50,12 +51,7 @@ export function FormularioRecarga({ cuentaId, apiBaseUrl, token, onSuccess, onEr
         </View>
       )}
 
-      <CampoTexto
-        etiqueta="Cuenta a debitar (UUID)"
-        placeholder="00000000-0000-0000-0000-000000000001"
-        valor={cuenta}
-        onCambio={setCuentaId}
-      />
+      <SelectorCuenta etiqueta="Cuenta a debitar" token={token} onResuelta={(c) => setCuentaId(c.id)} />
 
       <View className="gap-1.5">
         <Text className="font-body-sm text-body-sm text-on-surface-variant mb-1">Operador</Text>

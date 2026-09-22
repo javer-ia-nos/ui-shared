@@ -20,7 +20,7 @@ export function PastillaPermisos({ userId, usuarioId, apiBaseUrl, token }: Pasti
 
   return (
     <Superficie nivel="container" redondeo="3xl" padding="lg" className="gap-4 w-full">
-      <View className="flex-row items-center justify-between">
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
         <View className="flex-row items-center gap-2">
           <Icono nombre="badge" color="#b5c4ff" />
           <Text className="font-headline-sm text-headline-sm text-on-surface">

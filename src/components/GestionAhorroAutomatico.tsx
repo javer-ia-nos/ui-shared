@@ -6,6 +6,7 @@ import { CampoTexto } from "./CampoTexto";
 import { BotonBancario } from "./BotonBancario";
 import { PastillaEstado } from "./PastillaEstado";
 import { useAhorroAutomatico, type FrecuenciaAhorro, type ReglaAhorroAutomatico } from "../hooks/useAhorroAutomatico";
+import { useBolsillos, type Subcuenta } from "../hooks/useBolsillos";
 import { formatearMoneda, formatearFecha } from "../utils";
 
 export interface GestionAhorroAutomaticoProps {
@@ -18,12 +19,14 @@ const FRECUENCIAS: FrecuenciaAhorro[] = ["DIARIA", "SEMANAL", "MENSUAL"];
 
 function TarjetaRegla({
   regla,
+  nombreBolsillo,
   onPausar,
   onEditar,
   onEliminar,
   cargando,
 }: {
   regla: ReglaAhorroAutomatico;
+  nombreBolsillo: string;
   onPausar: () => void;
   onEditar: (monto: number) => void;
   onEliminar: () => void;
@@ -33,12 +36,10 @@ function TarjetaRegla({
 
   return (
     <View className="p-4 bg-surface-container rounded-2xl border border-outline-variant/30 gap-3">
-      <View className="flex-row items-center justify-between">
-        <View>
-          <View className="flex-row items-center gap-2">
-            <Text className="font-title-md text-title-md text-on-surface">
-              Bolsillo {regla.subAccountId.slice(0, 8)}…
-            </Text>
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
+        <View className="flex-1 min-w-[160px]">
+          <View className="flex-row flex-wrap items-center gap-2">
+            <Text className="font-title-md text-title-md text-on-surface">Bolsillo {nombreBolsillo}</Text>
             <PastillaEstado tono={regla.isActive ? "secondary" : "neutral"} texto={regla.isActive ? "Activa" : "Pausada"} />
           </View>
           <Text className="font-body-sm text-body-sm text-on-surface-variant mt-1">
@@ -59,7 +60,7 @@ function TarjetaRegla({
         />
       </View>
 
-      <View className="flex-row gap-2">
+      <View className="flex-row flex-wrap gap-2">
         <BotonBancario
           titulo={regla.isActive ? "Pausar" : "Reanudar"}
           variante="secundario"
@@ -79,6 +80,9 @@ export function GestionAhorroAutomatico({ cuentaId, apiBaseUrl, token }: Gestion
     apiBaseUrl,
     token,
   });
+  // Los bolsillos son de la misma cuenta — se cargan acá solo para poder
+  // elegirlos por nombre en vez de pedirle al usuario el UUID de la subcuenta.
+  const { subcuentas: bolsillos, cargar: cargarBolsillos } = useBolsillos({ cuentaId, apiBaseUrl, token });
 
   const [subAccountId, setSubAccountId] = useState("");
   const [monto, setMonto] = useState("");
@@ -86,12 +90,15 @@ export function GestionAhorroAutomatico({ cuentaId, apiBaseUrl, token }: Gestion
 
   useEffect(() => {
     cargar();
+    cargarBolsillos();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cuentaId]);
 
+  const nombreDeBolsillo = (id: string) => bolsillos.find((b) => b.id === id)?.name ?? `${id.slice(0, 8)}…`;
+
   return (
     <Superficie nivel="container" redondeo="3xl" padding="lg" className="gap-6 w-full">
-      <View className="flex-row items-center justify-between">
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
         <View className="flex-row items-center gap-2">
           <Icono nombre="trending_up" color="#b5c4ff" />
           <Text className="font-headline-sm text-headline-sm text-on-surface">Ahorro automático (CU-09)</Text>
@@ -122,6 +129,7 @@ export function GestionAhorroAutomatico({ cuentaId, apiBaseUrl, token }: Gestion
             <TarjetaRegla
               key={r.id}
               regla={r}
+              nombreBolsillo={nombreDeBolsillo(r.subAccountId)}
               cargando={cargando}
               onPausar={() => pausarReanudar(r.id)}
               onEditar={(nuevoMonto) => modificar(r.id, { amount: nuevoMonto })}
@@ -133,12 +141,34 @@ export function GestionAhorroAutomatico({ cuentaId, apiBaseUrl, token }: Gestion
 
       <Superficie nivel="container-low" redondeo="2xl" padding="md" className="gap-4">
         <Text className="font-title-md text-title-md text-on-surface">Crear nueva regla</Text>
-        <CampoTexto
-          etiqueta="Bolsillo destino (UUID de la subcuenta)"
-          valor={subAccountId}
-          onCambio={setSubAccountId}
-          placeholder="00000000-0000-0000-0000-000000000003"
-        />
+        {bolsillos.length === 0 ? (
+          <Text className="font-body-sm text-body-sm text-on-surface-variant">
+            Esta cuenta todavía no tiene bolsillos — crea uno arriba antes de programar un ahorro automático.
+          </Text>
+        ) : (
+          <View className="gap-1.5">
+            <Text className="font-body-sm text-body-sm text-on-surface-variant mb-1.5">Bolsillo destino</Text>
+            <View className="flex-row flex-wrap gap-2">
+              {bolsillos.map((b: Subcuenta) => (
+                <Pressable
+                  key={b.id}
+                  onPress={() => setSubAccountId(b.id)}
+                  className={`px-3 py-2 rounded-lg ${
+                    subAccountId === b.id ? "bg-secondary-container" : "bg-surface-container-low"
+                  }`}
+                >
+                  <Text
+                    className={`font-body-sm text-body-sm ${
+                      subAccountId === b.id ? "text-on-secondary-container font-medium" : "text-on-surface-variant"
+                    }`}
+                  >
+                    {b.name}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        )}
         <CampoTexto
           etiqueta="Monto por ejecución"
           valor={monto}
@@ -148,7 +178,7 @@ export function GestionAhorroAutomatico({ cuentaId, apiBaseUrl, token }: Gestion
         />
         <View className="gap-1.5">
           <Text className="font-body-sm text-body-sm text-on-surface-variant mb-1.5">Frecuencia</Text>
-          <View className="flex-row gap-2">
+          <View className="flex-row flex-wrap gap-2">
             {FRECUENCIAS.map((f) => (
               <Pressable
                 key={f}

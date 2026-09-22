@@ -57,8 +57,8 @@ function TarjetaBeneficiario({
   onEliminar: () => void;
 }) {
   return (
-    <View className="flex-row items-center justify-between p-4 bg-surface-container rounded-2xl border border-outline-variant/30">
-      <View className="flex-1">
+    <View className="flex-row flex-wrap items-center justify-between gap-3 p-4 bg-surface-container rounded-2xl border border-outline-variant/30">
+      <View className="flex-1 min-w-[160px]">
         <Text className="font-title-md text-title-md text-on-surface">{beneficiario.alias}</Text>
         <Text className="font-body-sm text-body-sm text-on-surface-variant">
           {beneficiario.bankName} · {beneficiario.accountNumber} ({beneficiario.accountType})
@@ -67,7 +67,7 @@ function TarjetaBeneficiario({
           {beneficiario.documentType} {beneficiario.documentNumber}
         </Text>
       </View>
-      <View className="flex-row gap-2">
+      <View className="flex-row flex-wrap gap-2">
         <BotonBancario titulo="Editar" variante="secundario" onPress={onEditar} />
         <BotonBancario titulo="Eliminar" variante="peligro" onPress={onEliminar} />
       </View>
@@ -125,7 +125,7 @@ export function GestionBeneficiarios({ userId, usuarioId, apiBaseUrl, token }: G
 
   return (
     <Superficie nivel="container" redondeo="3xl" padding="lg" className="gap-6 w-full">
-      <View className="flex-row items-center justify-between">
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
         <View className="flex-row items-center gap-2">
           <Icono nombre="person" color="#b5c4ff" />
           <Text className="font-headline-sm text-headline-sm text-on-surface">Beneficiarios (CU-03)</Text>
@@ -185,7 +185,7 @@ export function GestionBeneficiarios({ userId, usuarioId, apiBaseUrl, token }: G
           onCambio={setDocumentNumber}
           placeholder="1000000000"
         />
-        <View className="flex-row gap-2">
+        <View className="flex-row flex-wrap gap-2">
           <BotonBancario
             titulo={cargando ? "Guardando..." : editandoId ? "Guardar cambios" : "Registrar beneficiario"}
             onPress={guardar}

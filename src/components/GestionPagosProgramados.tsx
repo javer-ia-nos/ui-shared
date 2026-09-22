@@ -52,7 +52,7 @@ export function GestionPagosProgramados({ cuentaOrigen, apiBaseUrl, token }: Ges
 
   return (
     <Superficie nivel="container" redondeo="3xl" padding="lg" className="gap-6 w-full">
-      <View className="flex-row items-center justify-between">
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
         <View className="flex-row items-center gap-2">
           <Icono nombre="event_repeat" color="#b5c4ff" />
           <Text className="font-headline-sm text-headline-sm text-on-surface">Pagos automáticos (CU-24)</Text>
@@ -84,8 +84,8 @@ export function GestionPagosProgramados({ cuentaOrigen, apiBaseUrl, token }: Ges
               key={p.id}
               className="p-4 bg-surface-container rounded-2xl border border-outline-variant/30 gap-2"
             >
-              <View className="flex-row items-center justify-between">
-                <Text className="font-title-md text-title-md text-on-surface">
+              <View className="flex-row flex-wrap items-center justify-between gap-2">
+                <Text className="font-title-md text-title-md text-on-surface flex-1 min-w-[140px]">
                   {formatearMoneda(p.monto)} · {ETIQUETA_FRECUENCIA[p.frecuencia as FrecuenciaPago] ?? p.frecuencia}
                 </Text>
                 <PastillaEstado tono={p.activo ? "secondary" : "neutral"} texto={p.activo ? "Activo" : "Pausado"} />
@@ -93,7 +93,7 @@ export function GestionPagosProgramados({ cuentaOrigen, apiBaseUrl, token }: Ges
               <Text className="font-body-sm text-body-sm text-on-surface-variant">
                 Próxima ejecución: {formatearFecha(p.proximaEjecucion)}
               </Text>
-              <View className="flex-row gap-2 mt-1">
+              <View className="flex-row flex-wrap gap-2 mt-1">
                 <BotonBancario
                   titulo={p.activo ? "Pausar" : "Reanudar"}
                   variante="secundario"

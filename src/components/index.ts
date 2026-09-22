@@ -19,6 +19,10 @@ export {
   type MovimientoResumen,
   type CertificadoResumen,
 } from "./PantallaInicioCuentas";
+export { AccountCard, type AccountCardProps } from "./AccountCard";
+export { QuickActions, type QuickActionsProps, type AccionRapida } from "./QuickActions";
+export { TransactionLedger, type TransactionLedgerProps } from "./TransactionLedger";
+export { SecuritySummary, type SecuritySummaryProps } from "./SecuritySummary";
 export { FormularioLogin, type FormularioLoginProps } from "./FormularioLogin";
 export {
   PantallaDispositivosConfiables,
@@ -39,6 +43,12 @@ export { FormularioPagoFactura, type FormularioPagoFacturaProps } from "./Formul
 export { FormularioRecarga, type FormularioRecargaProps } from "./FormularioRecarga";
 export { GestionPagosProgramados, type GestionPagosProgramadosProps } from "./GestionPagosProgramados";
 export { FormularioPagoPresencial, type FormularioPagoPresencialProps } from "./FormularioPagoPresencial";
+export { DigitalReceiptPreview, type DigitalReceiptPreviewProps } from "./DigitalReceiptPreview";
+export {
+  PantallaTransferenciasPagos,
+  type PantallaTransferenciasPagosProps,
+  type DestinoTransferencia,
+} from "./PantallaTransferenciasPagos";
 
 // --- ms-cuentas: apertura, gestión, beneficiarios, bolsillos, ahorro automático ---
 export { FormularioAperturaCuenta, type FormularioAperturaCuentaProps } from "./FormularioAperturaCuenta";
@@ -54,3 +64,16 @@ export { PantallaPrestamos, type PantallaPrestamosProps } from "./PantallaPresta
 export { PantallaPosicionConsolidada, type PantallaPosicionConsolidadaProps } from "./PantallaPosicionConsolidada";
 export { PantallaExtracto, type PantallaExtractoProps } from "./PantallaExtracto";
 export { ValidadorCertificado, type ValidadorCertificadoProps } from "./ValidadorCertificado";
+export { SelectorCuenta, type SelectorCuentaProps } from "./SelectorCuenta";
+
+// --- ms-tarjetas ---
+export { DynamicCardVisual, type DynamicCardVisualProps } from "./DynamicCardVisual";
+export { CashAdvanceSimulator, type CashAdvanceSimulatorProps } from "./CashAdvanceSimulator";
+export { PantallaTarjetasCreditos, type PantallaTarjetasCreditosProps } from "./PantallaTarjetasCreditos";
+
+// --- ms-crm ---
+export { SupportChatPQRS, type SupportChatPQRSProps } from "./SupportChatPQRS";
+export {
+  PantallaInversionesSeguridadPQRS,
+  type PantallaInversionesSeguridadPQRSProps,
+} from "./PantallaInversionesSeguridadPQRS";

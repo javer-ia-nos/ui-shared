@@ -21,6 +21,7 @@ export type NombreSimbolo =
   | "close"
   | "computer"
   | "content_copy"
+  | "credit_card"
   | "delete"
   | "description"
   | "devices"

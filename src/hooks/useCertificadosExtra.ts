@@ -41,7 +41,7 @@ export function useCertificadosExtra({ apiBaseUrl, token }: UseCertificadosExtra
       setError(null);
       setResultado(null);
       try {
-        const res = await fetch(`${baseUrl}/certificados/validar/${encodeURIComponent(codigo)}`, {
+        const res = await fetch(`${baseUrl}/financiero/certificados/validar/${encodeURIComponent(codigo)}`, {
           headers: encabezadosAuth(token),
         });
         const body = await res.json().catch(() => ({}));
@@ -64,7 +64,7 @@ export function useCertificadosExtra({ apiBaseUrl, token }: UseCertificadosExtra
       setCargando(true);
       setError(null);
       try {
-        const res = await fetch(`${baseUrl}/certificados/${certificadoId}/anular`, {
+        const res = await fetch(`${baseUrl}/financiero/certificados/${certificadoId}/anular`, {
           method: "POST",
           headers: encabezadosAuth(token),
         });

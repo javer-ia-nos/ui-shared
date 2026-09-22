@@ -4,6 +4,7 @@ import { CampoTexto } from "./CampoTexto";
 import { BotonBancario } from "./BotonBancario";
 import { Superficie } from "./Superficie";
 import { Icono } from "./Icono";
+import { SelectorCuenta } from "./SelectorCuenta";
 import { useCDT, type UseCDTOptions } from "../hooks/useCDT";
 import { formatearMoneda, formatearFecha } from "../utils";
 
@@ -56,12 +57,10 @@ export function FormularioAperturaCDT(props: FormularioAperturaCDTProps) {
 
       {!resultado && (
         <>
-          <CampoTexto
-            etiqueta="Cuenta origen (UUID)"
-            placeholder="00000000-0000-0000-0000-000000000001"
-            valor={cuentaOrigen}
-            onCambio={setCuentaOrigen}
-          />
+          <View className="gap-1.5">
+            <Text className="font-body-sm text-body-sm text-on-surface-variant">Cuenta origen</Text>
+            <SelectorCuenta token={props.token} onResuelta={(c) => setCuentaOrigen(c.id)} />
+          </View>
           <CampoTexto
             etiqueta="Monto (COP)"
             placeholder="5000000"

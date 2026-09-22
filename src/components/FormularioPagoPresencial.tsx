@@ -4,6 +4,7 @@ import { CampoTexto } from "./CampoTexto";
 import { BotonBancario } from "./BotonBancario";
 import { Superficie } from "./Superficie";
 import { Icono } from "./Icono";
+import { SelectorCuenta } from "./SelectorCuenta";
 import { usePagoPresencial, type UsePagoPresencialOptions, type TipoOperacionPresencial } from "../hooks/usePagoPresencial";
 
 export interface FormularioPagoPresencialProps extends UsePagoPresencialOptions {}
@@ -85,12 +86,7 @@ export function FormularioPagoPresencial({ cuentaId, apiBaseUrl, token, onSucces
         </View>
       </View>
 
-      <CampoTexto
-        etiqueta="Cuenta (UUID)"
-        placeholder="00000000-0000-0000-0000-000000000001"
-        valor={cuenta}
-        onCambio={setCuentaId}
-      />
+      <SelectorCuenta etiqueta="Cuenta" token={token} onResuelta={(c) => setCuentaId(c.id)} />
       <CampoTexto etiqueta="Monto" placeholder="200000" valor={monto} onCambio={setMonto} teclado="numeric" />
       <CampoTexto etiqueta="Sucursal / corresponsal" placeholder="SUC-BOGOTA-01" valor={sucursalId} onCambio={setSucursalId} />
       <CampoTexto etiqueta="Cajero" placeholder="CAJ-042" valor={cajeroId} onCambio={setCajeroId} />

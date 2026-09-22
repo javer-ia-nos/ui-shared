@@ -5,6 +5,7 @@ import { CampoTexto } from "./CampoTexto";
 import { BotonBancario } from "./BotonBancario";
 import { Icono } from "./Icono";
 import { PastillaEstado } from "./PastillaEstado";
+import { SelectorCuenta } from "./SelectorCuenta";
 import { usePagosQR, type UsePagosQROptions } from "../hooks/usePagosQR";
 import { formatearMoneda, formatearFecha } from "../utils";
 
@@ -71,7 +72,7 @@ export function PantallaPagosQR({ apiBaseUrl, token, cuentaId }: PantallaPagosQR
     <View className="gap-6">
       {/* Generar QR de cobro */}
       <Superficie nivel="container" redondeo="3xl" padding="lg" className="gap-4 w-full">
-        <View className="flex-row items-center gap-2">
+        <View className="flex-row flex-wrap items-center gap-2">
           <Icono nombre="qr_code_2" color="#b5c4ff" />
           <Text className="font-headline-sm text-headline-sm text-on-surface">Generar QR de cobro (CU-25)</Text>
         </View>
@@ -82,12 +83,7 @@ export function PantallaPagosQR({ apiBaseUrl, token, cuentaId }: PantallaPagosQR
           </View>
         )}
 
-        <CampoTexto
-          etiqueta="Cuenta destino (UUID)"
-          placeholder="00000000-0000-0000-0000-000000000001"
-          valor={cuentaDestino}
-          onCambio={setCuentaDestino}
-        />
+        <SelectorCuenta etiqueta="Cuenta destino (recibe el cobro)" token={token} onResuelta={(c) => setCuentaDestino(c.id)} />
         <CampoTexto etiqueta="Nombre del comercio o receptor" placeholder="Tienda Javeriana" valor={comercio} onCambio={setComercio} />
         <CampoTexto
           etiqueta="Monto fijo (COP, opcional)"
@@ -111,7 +107,7 @@ export function PantallaPagosQR({ apiBaseUrl, token, cuentaId }: PantallaPagosQR
 
         {qrGenerado && (
           <Superficie nivel="container-low" redondeo="2xl" padding="md" className="gap-2">
-            <View className="flex-row items-center gap-2">
+            <View className="flex-row flex-wrap items-center gap-2">
               <PastillaEstado texto="QR generado" tono="secondary" />
               <Text className="font-body-sm text-body-sm text-on-surface-variant">
                 Expira {formatearFecha(qrGenerado.expiresAt)}
@@ -132,7 +128,7 @@ export function PantallaPagosQR({ apiBaseUrl, token, cuentaId }: PantallaPagosQR
 
       {/* Pagar un QR */}
       <Superficie nivel="container" redondeo="3xl" padding="lg" className="gap-4 w-full">
-        <View className="flex-row items-center gap-2">
+        <View className="flex-row flex-wrap items-center gap-2">
           <Icono nombre="qr_code_scanner" color="#b5c4ff" />
           <Text className="font-headline-sm text-headline-sm text-on-surface">Pagar un QR</Text>
         </View>
@@ -156,12 +152,7 @@ export function PantallaPagosQR({ apiBaseUrl, token, cuentaId }: PantallaPagosQR
           </Superficie>
         ) : (
           <>
-            <CampoTexto
-              etiqueta="Cuenta origen (UUID)"
-              placeholder="00000000-0000-0000-0000-000000000002"
-              valor={cuentaOrigen}
-              onCambio={setCuentaOrigen}
-            />
+            <SelectorCuenta etiqueta="Cuenta origen (paga)" token={token} onResuelta={(c) => setCuentaOrigen(c.id)} />
             <CampoTexto
               etiqueta="Código QR (pega el token recibido)"
               placeholder="Token del QR"

@@ -57,7 +57,7 @@ export function usePrestamos(options: UsePrestamosOptions = {}) {
       setCargando(true);
       setError(null);
       try {
-        const res = await fetch(`${baseUrl}/prestamos/${id}`, {
+        const res = await fetch(`${baseUrl}/financiero/prestamos/${id}`, {
           headers: encabezadosAuth(options.token),
         });
         const body = await res.json().catch(() => ({}));
@@ -102,7 +102,7 @@ export function usePrestamos(options: UsePrestamosOptions = {}) {
     setError(null);
 
     try {
-      const res = await fetch(`${baseUrl}/prestamos`, {
+      const res = await fetch(`${baseUrl}/financiero/prestamos`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...encabezadosAuth(options.token) },
         body: JSON.stringify({
@@ -134,7 +134,7 @@ export function usePrestamos(options: UsePrestamosOptions = {}) {
       setCargandoCuota(numero);
       setError(null);
       try {
-        const res = await fetch(`${baseUrl}/prestamos/${prestamoId}/cuotas/${numero}/pagos`, {
+        const res = await fetch(`${baseUrl}/financiero/prestamos/${prestamoId}/cuotas/${numero}/pagos`, {
           method: "POST",
           headers: { "Content-Type": "application/json", ...encabezadosAuth(options.token) },
           body: JSON.stringify({ cuentaOrigen }),

@@ -58,7 +58,7 @@ export function useAperturaCuenta(options: UseAperturaCuentaOptions = {}) {
       setCargando(true);
       setError(null);
       try {
-        const res = await fetch(`${baseUrl}/${SEGMENTO[tipoCuenta]}`, {
+        const res = await fetch(`${baseUrl}/cuentas/${SEGMENTO[tipoCuenta]}`, {
           method: "POST",
           headers: { "Content-Type": "application/json", ...encabezadosAuth(options.token) },
           body: JSON.stringify({ userId, ...opciones }),
@@ -87,7 +87,7 @@ export function useAperturaCuenta(options: UseAperturaCuentaOptions = {}) {
       setCargando(true);
       setError(null);
       try {
-        const res = await fetch(`${baseUrl}/${SEGMENTO[tipoCuenta]}/numero/${numeroCuenta}`, {
+        const res = await fetch(`${baseUrl}/cuentas/${SEGMENTO[tipoCuenta]}/numero/${numeroCuenta}`, {
           headers: encabezadosAuth(options.token),
         });
         const body = await res.json().catch(() => ({}));

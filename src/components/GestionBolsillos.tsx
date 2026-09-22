@@ -33,10 +33,10 @@ function TarjetaBolsillo({
 
   return (
     <View className="p-4 bg-surface-container rounded-2xl border border-outline-variant/30 gap-3">
-      <View className="flex-row items-center justify-between">
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
         {editando ? (
-          <View className="flex-1 flex-row items-center gap-2">
-            <View className="flex-1">
+          <View className="flex-1 min-w-[200px] flex-row flex-wrap items-end gap-2">
+            <View className="flex-1 min-w-[120px]">
               <CampoTexto etiqueta="Nombre" valor={nuevoNombre} onCambio={setNuevoNombre} />
             </View>
             <BotonBancario
@@ -51,7 +51,7 @@ function TarjetaBolsillo({
           </View>
         ) : (
           <>
-            <View>
+            <View className="flex-1 min-w-[120px]">
               <Text className="font-title-md text-title-md text-on-surface">{bolsillo.name}</Text>
               <Text className="font-headline-sm text-headline-sm text-secondary mt-1">
                 {formatearMoneda(bolsillo.balance)}
@@ -62,33 +62,33 @@ function TarjetaBolsillo({
         )}
       </View>
 
-      <View className="flex-row items-center gap-2">
-        <View className="flex-1">
-          <CampoTexto
-            etiqueta="Monto"
-            valor={monto}
-            onCambio={setMonto}
-            teclado="numeric"
-            placeholder="20000"
+      <View className="gap-2">
+        <CampoTexto
+          etiqueta="Monto"
+          valor={monto}
+          onCambio={setMonto}
+          teclado="numeric"
+          placeholder="20000"
+        />
+        <View className="flex-row flex-wrap gap-2">
+          <BotonBancario
+            titulo="Apartar"
+            disabled={cargando || !monto}
+            onPress={() => {
+              onOperar("separar", Number(monto));
+              setMonto("");
+            }}
+          />
+          <BotonBancario
+            titulo="Liberar"
+            variante="secundario"
+            disabled={cargando || !monto}
+            onPress={() => {
+              onOperar("liberar", Number(monto));
+              setMonto("");
+            }}
           />
         </View>
-        <BotonBancario
-          titulo="Apartar"
-          disabled={cargando || !monto}
-          onPress={() => {
-            onOperar("separar", Number(monto));
-            setMonto("");
-          }}
-        />
-        <BotonBancario
-          titulo="Liberar"
-          variante="secundario"
-          disabled={cargando || !monto}
-          onPress={() => {
-            onOperar("liberar", Number(monto));
-            setMonto("");
-          }}
-        />
       </View>
 
       <BotonBancario titulo="Cerrar bolsillo" variante="peligro" disabled={cargando} onPress={onCerrar} />
@@ -112,7 +112,7 @@ export function GestionBolsillos({ cuentaId, parentAccountId, apiBaseUrl, token 
 
   return (
     <Superficie nivel="container" redondeo="3xl" padding="lg" className="gap-6 w-full">
-      <View className="flex-row items-center justify-between">
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
         <View className="flex-row items-center gap-2">
           <Icono nombre="savings" color="#b5c4ff" />
           <Text className="font-headline-sm text-headline-sm text-on-surface">Bolsillos (CU-08)</Text>
@@ -131,7 +131,7 @@ export function GestionBolsillos({ cuentaId, parentAccountId, apiBaseUrl, token 
         </View>
       )}
 
-      <View className="flex-1 p-4 bg-surface-container rounded-2xl border border-outline-variant/30">
+      <View className="p-4 bg-surface-container rounded-2xl border border-outline-variant/30">
         <Text className="text-on-surface-variant font-label-md text-label-md">Total apartado</Text>
         <Text className="font-headline-sm text-headline-sm text-primary mt-1">
           {formatearMoneda(totalApartado)}

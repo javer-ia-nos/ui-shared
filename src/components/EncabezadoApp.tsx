@@ -35,11 +35,13 @@ export function EncabezadoApp({
 }: EncabezadoAppProps) {
   return (
     <View className="bg-surface/90 px-4 py-3 flex-row items-center justify-between gap-4">
-      <View className="flex-row items-center gap-2">
+      <View className="flex-row items-center gap-2 flex-shrink-0">
         <Text className="font-headline-sm text-headline-sm text-on-surface tracking-tight">
           Javer-IA-nos
         </Text>
-        <PastillaEstado texto="sync" tono="secondary" />
+        <View className="hidden sm:flex">
+          <PastillaEstado texto="sync" tono="secondary" />
+        </View>
       </View>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-1 mx-2">
@@ -65,7 +67,7 @@ export function EncabezadoApp({
         </View>
       </ScrollView>
 
-      <View className="flex-row items-center gap-3">
+      <View className="flex-row items-center gap-3 flex-shrink-0">
         <Pressable
           onPress={onNotificaciones}
           accessibilityRole="button"

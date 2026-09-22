@@ -32,3 +32,27 @@ export { usePrestamos, type UsePrestamosOptions, type CuotaPrestamo, type Presta
 export { usePosicionConsolidada, type UsePosicionConsolidadaOptions } from "./usePosicionConsolidada";
 export { useExtractoCuenta, type UseExtractoCuentaOptions } from "./useExtractoCuenta";
 export { useCertificadosExtra, type UseCertificadosExtraOptions } from "./useCertificadosExtra";
+export { useResolverCuenta, type UseResolverCuentaOptions, type CuentaResuelta } from "./useResolverCuenta";
+
+// --- ms-tarjetas ---
+export {
+  useTarjetas,
+  type UseTarjetasOptions,
+  type Tarjeta,
+  type TipoTarjeta,
+  type EstadoTarjeta,
+  type CupoTarjeta,
+  type ExtractoTarjeta,
+  type MovimientoTarjeta,
+} from "./useTarjetas";
+
+// --- ms-crm ---
+export {
+  useCrm,
+  type UseCrmOptions,
+  type MensajeChat,
+  type RemitenteChat,
+  type Pqrs,
+  type TipoPqrs,
+  type Disputa,
+} from "./useCrm";

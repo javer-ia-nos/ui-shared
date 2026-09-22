@@ -68,7 +68,7 @@ export function useCDT(options: UseCDTOptions = {}) {
     setError(null);
 
     try {
-      const res = await fetch(`${baseUrl}/cdt`, {
+      const res = await fetch(`${baseUrl}/financiero/cdt`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...encabezadosAuth(options.token) },
         body: JSON.stringify({

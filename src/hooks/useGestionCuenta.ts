@@ -28,7 +28,7 @@ export function useGestionCuenta({ cuentaId, tipoCuenta, apiBaseUrl, token }: Us
     setCargando(true);
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/${SEGMENTO[tipoCuenta]}/${cuentaId}`, {
+      const res = await fetch(`${baseUrl}/cuentas/${SEGMENTO[tipoCuenta]}/${cuentaId}`, {
         headers: encabezadosAuth(token),
       });
       const body = await res.json().catch(() => ({}));
@@ -47,7 +47,7 @@ export function useGestionCuenta({ cuentaId, tipoCuenta, apiBaseUrl, token }: Us
       setCargando(true);
       setError(null);
       try {
-        const res = await fetch(`${baseUrl}/${SEGMENTO[tipoCuenta]}/${cuentaId}`, {
+        const res = await fetch(`${baseUrl}/cuentas/${SEGMENTO[tipoCuenta]}/${cuentaId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json", ...encabezadosAuth(token) },
           body: JSON.stringify(cambios),
@@ -72,7 +72,7 @@ export function useGestionCuenta({ cuentaId, tipoCuenta, apiBaseUrl, token }: Us
       setCargando(true);
       setError(null);
       try {
-        const res = await fetch(`${baseUrl}/${SEGMENTO[tipoCuenta]}/${cuentaId}/titulares`, {
+        const res = await fetch(`${baseUrl}/cuentas/${SEGMENTO[tipoCuenta]}/${cuentaId}/titulares`, {
           method: "POST",
           headers: { "Content-Type": "application/json", ...encabezadosAuth(token) },
           body: JSON.stringify({ userId, holderRole }),
@@ -96,7 +96,7 @@ export function useGestionCuenta({ cuentaId, tipoCuenta, apiBaseUrl, token }: Us
     setCargando(true);
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/${SEGMENTO[tipoCuenta]}/${cuentaId}`, {
+      const res = await fetch(`${baseUrl}/cuentas/${SEGMENTO[tipoCuenta]}/${cuentaId}`, {
         method: "DELETE",
         headers: encabezadosAuth(token),
       });

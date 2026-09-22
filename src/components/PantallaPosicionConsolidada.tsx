@@ -20,7 +20,7 @@ export function PantallaPosicionConsolidada(props: PantallaPosicionConsolidadaPr
 
   return (
     <Superficie nivel="container" redondeo="3xl" padding="lg" className="gap-6 w-full">
-      <View className="flex-row items-center justify-between">
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
         <View className="flex-row items-center gap-2">
           <Icono nombre="trending_up" color="#b5c4ff" />
           <Text className="font-headline-sm text-headline-sm text-on-surface">
@@ -80,9 +80,9 @@ export function PantallaPosicionConsolidada(props: PantallaPosicionConsolidadaPr
               {posicion.productos.cuentas.map((c) => (
                 <View
                   key={c.id}
-                  className="flex-row items-center justify-between p-3 bg-surface-container rounded-xl"
+                  className="flex-row flex-wrap items-center justify-between gap-2 p-3 bg-surface-container rounded-xl"
                 >
-                  <View>
+                  <View className="flex-1 min-w-[140px]">
                     <Text className="font-body-md text-body-md text-on-surface">{c.tipo} · {c.numeroCuenta}</Text>
                     <PastillaEstado texto={c.estado} tono={c.estado === "ACTIVE" ? "secondary" : "neutral"} />
                   </View>
@@ -119,9 +119,9 @@ export function PantallaPosicionConsolidada(props: PantallaPosicionConsolidadaPr
               {posicion.productos.inversiones.map((i) => (
                 <View
                   key={i.id}
-                  className="flex-row items-center justify-between p-3 bg-surface-container rounded-xl"
+                  className="flex-row flex-wrap items-center justify-between gap-2 p-3 bg-surface-container rounded-xl"
                 >
-                  <View>
+                  <View className="flex-1 min-w-[140px]">
                     <Text className="font-body-md text-body-md text-on-surface">
                       {i.tipo} · {i.tasaEA}% E.A.
                     </Text>
@@ -140,7 +140,7 @@ export function PantallaPosicionConsolidada(props: PantallaPosicionConsolidadaPr
               <Text className="font-title-md text-title-md text-on-surface">Préstamos</Text>
               {posicion.productos.prestamos.map((p) => (
                 <View key={p.id} className="p-3 bg-surface-container rounded-xl gap-1">
-                  <View className="flex-row items-center justify-between">
+                  <View className="flex-row flex-wrap items-center justify-between gap-2">
                     <Text className="font-body-md text-body-md text-on-surface">Saldo pendiente</Text>
                     <Text className="font-title-md text-title-md text-error">{formatearMoneda(p.saldoPendiente)}</Text>
                   </View>

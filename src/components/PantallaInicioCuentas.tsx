@@ -1,12 +1,31 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text } from "react-native";
-import { Icono } from "./Icono";
 import { Superficie } from "./Superficie";
-import { PastillaEstado } from "./PastillaEstado";
 import { TarjetaSaldo } from "./TarjetaSaldo";
 import { BotonBancario } from "./BotonBancario";
-import { formatearMoneda, formatearFecha, enmascararCuenta } from "../utils";
+import { PastillaEstado } from "./PastillaEstado";
+import { Icono } from "./Icono";
+import { AccountCard } from "./AccountCard";
+import { QuickActions, type AccionRapida } from "./QuickActions";
+import { TransactionLedger } from "./TransactionLedger";
+import { SecuritySummary } from "./SecuritySummary";
+import { SelectorCuenta } from "./SelectorCuenta";
+import { PantallaPosicionConsolidada } from "./PantallaPosicionConsolidada";
+import { PantallaExtracto } from "./PantallaExtracto";
+import { FormularioAperturaCuenta } from "./FormularioAperturaCuenta";
+import { GestionCuenta } from "./GestionCuenta";
+import { GestionBolsillos } from "./GestionBolsillos";
+import { GestionAhorroAutomatico } from "./GestionAhorroAutomatico";
+import { FormularioRecarga } from "./FormularioRecarga";
+import { PantallaPagosQR } from "./PantallaPagosQR";
+import { FormularioPagoPresencial } from "./FormularioPagoPresencial";
+import { GestionPagosProgramados } from "./GestionPagosProgramados";
+import { FormularioCambioPassword } from "./FormularioCambioPassword";
+import { PastillaPermisos } from "./PastillaPermisos";
+import { ValidadorCertificado } from "./ValidadorCertificado";
+import { formatearFecha, formatearMoneda } from "../utils";
 import { useInicioCuentas, type UseInicioCuentasOptions } from "../hooks/useInicioCuentas";
+import type { CuentaResuelta } from "../hooks/useResolverCuenta";
 
 export interface CuentaResumen {
   id: string;
@@ -41,24 +60,33 @@ export interface CertificadoResumen {
   estado: string;
 }
 
-export interface PantallaInicioCuentasProps extends UseInicioCuentasOptions {}
+export interface PantallaInicioCuentasProps extends UseInicioCuentasOptions {
+  /** Navegación a las otras 3 pantallas universales, resuelta por la app anfitriona. */
+  onAccionRapida?: (accion: AccionRapida) => void;
+  onVerSeguridad?: () => void;
+}
 
 /**
- * Pantalla "Inicio & Cuentas": saldo consolidado, cuentas, bolsillos (subcuentas),
- * historial de pagos presenciales (CU-28) y certificados (CU-10) — TODO consultado
- * en vivo contra ms-cuentas/ms-transacciones/ms-financiero. Sin usuarioId no hay
- * nada que mostrar (no existen datos "de ejemplo").
+ * Pantalla universal "Inicio & Cuentas" (spec Stitch): saldo consolidado,
+ * cuentas, bolsillos, accesos rápidos, registro de actividad y resumen de
+ * seguridad — TODO consultado en vivo contra ms-cuentas/ms-transacciones/
+ * ms-financiero/ms-seguridad. Sin usuarioId no hay nada que mostrar (no
+ * existen datos "de ejemplo"). En viewport móvil es un flujo vertical; en
+ * `lg:` (desktop) pasa a una retícula tipo Bento Grid.
  */
-export function PantallaInicioCuentas(props: PantallaInicioCuentasProps) {
+export function PantallaInicioCuentas({ onAccionRapida, onVerSeguridad, ...opciones }: PantallaInicioCuentasProps) {
   const { cuentas, bolsillos, movimientos, certificados, cargando, error, cargar, generarCertificado } =
-    useInicioCuentas(props);
+    useInicioCuentas(opciones);
 
   useEffect(() => {
     cargar();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.usuarioId]);
+  }, [opciones.usuarioId, opciones.userId]);
 
   const saldoConsolidado = cuentas.reduce((total, cuenta) => total + cuenta.saldoDisponible, 0);
+  const ingresos = movimientos.filter((m) => m.esIngreso).reduce((t, m) => t + m.monto, 0);
+  const egresos = movimientos.filter((m) => !m.esIngreso).reduce((t, m) => t + m.monto, 0);
+  const ahorroActivo = bolsillos.reduce((t, b) => t + b.balance, 0);
 
   return (
     <View className="gap-8 p-4">
@@ -80,123 +108,107 @@ export function PantallaInicioCuentas(props: PantallaInicioCuentasProps) {
         </Superficie>
       )}
 
+      {/* SECCIÓN 1: Hero de balance consolidado + KPIs (spec Stitch) */}
       {cuentas[0] && (
-        <TarjetaSaldo numeroCuenta={cuentas[0].numeroCuenta} tipoCuenta={cuentas[0].tipoCuenta} saldoDisponible={saldoConsolidado} />
-      )}
-
-      {/* Cuentas */}
-      {cuentas.length > 0 && (
-        <View className="gap-4">
-          <Text className="font-headline-lg text-headline-lg text-on-surface">
-            Cuentas de Ahorros & Corrientes
-          </Text>
-          <View className="gap-4">
-            {cuentas.map((cuenta) => (
-              <Superficie key={cuenta.id} nivel="container-high" redondeo="2xl" padding="lg" className="gap-4">
-                <View className="flex-row items-start justify-between gap-4">
-                  <View className="flex-1 gap-1">
-                    <Text className="font-body-md text-body-md font-semibold text-on-surface">
-                      {cuenta.titulo}
-                    </Text>
-                    <Text className="font-label-code text-body-md text-on-surface-variant">
-                      No. {enmascararCuenta(cuenta.numeroCuenta)}
-                    </Text>
-                  </View>
-                  <View className="items-end gap-1">
-                    <PastillaEstado texto={cuenta.etiquetaExtra || "Activa"} tono="secondary" conPunto={false} />
-                  </View>
-                </View>
-                <View>
-                  <Text className="font-label-caps text-label-caps uppercase text-on-surface-variant">
-                    Saldo Disponible
-                  </Text>
-                  <Text className="font-label-numeric-lg text-headline-lg text-on-surface font-bold">
-                    {formatearMoneda(cuenta.saldoDisponible)}
-                  </Text>
-                </View>
-              </Superficie>
-            ))}
+        <Superficie nivel="container-high" redondeo="2xl" padding="lg" className="gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <View className="lg:flex-1">
+            <TarjetaSaldo
+              numeroCuenta={cuentas[0].numeroCuenta}
+              tipoCuenta={cuentas[0].tipoCuenta}
+              saldoDisponible={saldoConsolidado}
+            />
           </View>
-        </View>
-      )}
-
-      {/* Bolsillos (subcuentas, CU-08) */}
-      {bolsillos.length > 0 && (
-        <View className="gap-4">
-          <Text className="font-headline-lg text-headline-lg text-on-surface">Bolsillos (CU-08)</Text>
-          <View className="gap-4">
-            {bolsillos.map((bolsillo) => (
-              <Superficie key={bolsillo.id} nivel="container" redondeo="2xl" padding="lg" className="gap-2">
-                <Text className="font-headline-sm text-headline-sm text-on-surface">{bolsillo.nombre}</Text>
-                <Text className="font-label-numeric-lg text-headline-sm text-secondary font-bold">
-                  {formatearMoneda(bolsillo.balance)}
-                </Text>
-              </Superficie>
-            ))}
+          <View className="flex-row flex-wrap gap-3 lg:flex-nowrap">
+            <Superficie nivel="container" redondeo="xl" padding="md" className="gap-1 flex-1 min-w-[150px]">
+              <Text className="font-body-sm text-body-sm text-on-surface-variant">Ingresos registrados</Text>
+              <Text className="font-label-numeric-md text-label-numeric-md text-[#10B981] font-semibold">
+                +{formatearMoneda(ingresos)}
+              </Text>
+            </Superficie>
+            <Superficie nivel="container" redondeo="xl" padding="md" className="gap-1 flex-1 min-w-[150px]">
+              <Text className="font-body-sm text-body-sm text-on-surface-variant">Gastos / Pagos</Text>
+              <Text className="font-label-numeric-md text-label-numeric-md text-on-surface font-semibold">
+                -{formatearMoneda(egresos)}
+              </Text>
+            </Superficie>
+            <Superficie nivel="container" redondeo="xl" padding="md" className="gap-1 flex-1 min-w-[150px]">
+              <Text className="font-body-sm text-body-sm text-on-surface-variant">Ahorro Activo</Text>
+              <Text className="font-label-numeric-md text-label-numeric-md text-tertiary font-semibold">
+                {formatearMoneda(ahorroActivo)}
+              </Text>
+            </Superficie>
           </View>
-        </View>
+        </Superficie>
       )}
 
-      {/* Pagos presenciales (CU-28) */}
-      {movimientos.length > 0 && (
-        <View className="gap-4">
-          <Text className="font-headline-lg text-headline-lg text-on-surface">
-            Historial de Pagos Presenciales (CU-28)
-          </Text>
-          <Superficie nivel="container" redondeo="2xl" padding="sm" className="gap-1">
-            {movimientos.map((mov) => (
-              <View key={mov.id} className="flex-row items-center justify-between gap-3 p-3 rounded-xl">
-                <View className="flex-row items-center gap-3 flex-1">
-                  <View className="w-10 h-10 rounded-xl bg-surface-container-highest items-center justify-center">
-                    <Icono nombre={mov.esIngreso ? "swap_horiz" : "account_balance"} color="#b1c7f0" />
-                  </View>
-                  <View className="flex-1">
-                    <Text className="font-medium text-on-surface" numberOfLines={1}>
-                      {mov.titulo}
-                    </Text>
-                    <Text className="font-body-sm text-body-sm text-on-surface-variant" numberOfLines={1}>
-                      {mov.detalle}
-                    </Text>
-                  </View>
-                </View>
-                <View className="items-end">
-                  <Text
-                    className={`font-label-numeric-md font-bold ${mov.esIngreso ? "text-secondary" : "text-on-surface"}`}
-                  >
-                    {mov.esIngreso ? "+" : "-"} {formatearMoneda(mov.monto)}
-                  </Text>
-                  <Text className="font-body-sm text-body-sm text-on-surface-variant">
-                    {formatearFecha(mov.fecha)}
-                  </Text>
-                </View>
+      {/* SECCIÓN 2: Accesos rápidos universales */}
+      {onAccionRapida && (
+        <QuickActions onAccion={onAccionRapida} certificadoDeshabilitado={cargando || cuentas.length === 0} />
+      )}
+
+      {/* SECCIÓN 3: Panel dividido — cuentas + registro de actividad (izq) / seguridad + certificados (der) */}
+      <View className="gap-6 lg:flex-row lg:items-start">
+        <View className="gap-6 lg:flex-1">
+          {(cuentas.length > 0 || bolsillos.length > 0) && (
+            <View className="gap-4">
+              <Text className="font-headline-md text-headline-md text-on-surface">Cuentas & Bolsillos Activos</Text>
+              <View className="gap-4 lg:flex-row lg:flex-wrap">
+                {cuentas.map((cuenta) => (
+                  <AccountCard key={cuenta.id} cuenta={cuenta} />
+                ))}
+                {bolsillos.map((bolsillo) => (
+                  <AccountCard key={bolsillo.id} bolsillo={bolsillo} />
+                ))}
               </View>
-            ))}
+            </View>
+          )}
+
+          {movimientos.length > 0 && (
+            <Superficie nivel="container" redondeo="2xl" padding="lg" className="gap-4">
+              <View>
+                <Text className="font-headline-md text-headline-md text-on-surface">Movimientos Recientes</Text>
+                <Text className="font-body-sm text-body-sm text-on-surface-variant">
+                  Registro inmutable de transferencias, recaudos y rendimientos
+                </Text>
+              </View>
+              <TransactionLedger movimientos={movimientos} />
+            </Superficie>
+          )}
+        </View>
+
+        <View className="gap-4 lg:w-[320px] lg:flex-shrink-0">
+          <SecuritySummary {...opciones} onVerMas={onVerSeguridad} />
+
+          <Superficie nivel="container" redondeo="2xl" padding="lg" className="gap-3">
+            <View className="flex-row items-start justify-between">
+              <View>
+                <Text className="font-label-caps text-label-caps uppercase text-tertiary">Trámite Institucional</Text>
+                <Text className="font-headline-sm text-headline-sm text-on-surface">Certificación Bancaria</Text>
+              </View>
+              <View className="p-2.5 rounded-xl bg-tertiary-container">
+                <Icono nombre="picture_as_pdf" color="#ffb955" />
+              </View>
+            </View>
+            <Text className="font-body-sm text-body-sm text-on-surface-variant">
+              Documento oficial con código de verificación, generado contra ms-financiero.
+            </Text>
+            <BotonBancario
+              titulo={cargando ? "Generando…" : "Descargar Certificado Oficial"}
+              onPress={() => generarCertificado("CONSOLIDADO")}
+              disabled={cargando || cuentas.length === 0}
+            />
           </Superficie>
         </View>
-      )}
+      </View>
 
-      {/* Certificados (CU-10) */}
-      <View className="gap-4">
-        <View className="flex-row items-center justify-between">
-          <Text className="font-headline-lg text-headline-lg text-on-surface">
-            Certificaciones & Extractos (CU-10)
-          </Text>
-          <BotonBancario
-            titulo="Generar certificado"
-            variante="secundario"
-            onPress={() => generarCertificado("CONSOLIDADO")}
-            disabled={cargando || cuentas.length === 0}
-          />
-        </View>
-        {certificados.length === 0 ? (
-          <Text className="text-on-surface-variant font-body-sm text-body-sm">
-            Este usuario todavía no ha generado certificados.
-          </Text>
-        ) : (
-          <View className="gap-4">
+      {/* Certificados ya emitidos (CU-10) */}
+      {certificados.length > 0 && (
+        <View className="gap-4">
+          <Text className="font-headline-md text-headline-md text-on-surface">Certificaciones & Extractos (CU-10)</Text>
+          <View className="gap-4 lg:flex-row lg:flex-wrap">
             {certificados.map((cert) => (
-              <Superficie key={cert.id} nivel="container" redondeo="2xl" padding="lg" className="gap-2">
-                <View className="flex-row items-center justify-between">
+              <Superficie key={cert.id} nivel="container" redondeo="2xl" padding="lg" className="gap-2 lg:flex-1 lg:min-w-[260px]">
+                <View className="flex-row flex-wrap items-center justify-between gap-2">
                   <Text className="font-headline-sm text-headline-sm text-on-surface">{cert.tipoCertificado}</Text>
                   <PastillaEstado texto={cert.estado} tono={cert.estado === "ACTIVE" ? "secondary" : "neutral"} />
                 </View>
@@ -206,8 +218,64 @@ export function PantallaInicioCuentas(props: PantallaInicioCuentasProps) {
               </Superficie>
             ))}
           </View>
-        )}
-      </View>
+        </View>
+      )}
+
+      <ServiciosAdicionales usuarioId={opciones.userId ?? opciones.usuarioId} token={opciones.token} />
+    </View>
+  );
+}
+
+/**
+ * Acciones secundarias que no tienen pantalla propia en las 4 universales del
+ * spec de Stitch (apertura/gestión de cuenta, bolsillos, ahorro automático,
+ * recargas, QR, pagos presenciales, pagos programados, cambio de contraseña,
+ * permisos y validación de certificados) — se mantienen accesibles acá,
+ * colapsadas, para no perder cobertura funcional de los CU existentes.
+ */
+function ServiciosAdicionales({ usuarioId, token }: { usuarioId?: string; token?: string }) {
+  const [visible, setVisible] = useState(false);
+  const [cuenta, setCuenta] = useState<CuentaResuelta | null>(null);
+  const effectiveUserId = usuarioId ?? "";
+
+  return (
+    <View className="gap-4">
+      <BotonBancario
+        titulo={visible ? "Ocultar más servicios" : "Más servicios"}
+        variante="secundario"
+        onPress={() => setVisible((v) => !v)}
+      />
+      {visible && (
+        <View className="gap-6">
+          <PantallaPosicionConsolidada userId={effectiveUserId} token={token} />
+
+          <Superficie nivel="container-low" redondeo="2xl" padding="md" className="gap-2">
+            <SelectorCuenta etiqueta="Cuenta para consultar extracto o gestionar" token={token} onResuelta={setCuenta} />
+          </Superficie>
+          {cuenta && (
+            <>
+              <PantallaExtracto cuentaId={cuenta.id} token={token} />
+              <GestionCuenta
+                cuentaId={cuenta.id}
+                tipoCuenta={cuenta.accountType === "SAVINGS" ? "AHORROS" : "CORRIENTE"}
+                token={token}
+              />
+              <GestionBolsillos cuentaId={cuenta.id} token={token} />
+              <GestionAhorroAutomatico cuentaId={cuenta.id} token={token} />
+              <GestionPagosProgramados cuentaOrigen={cuenta.id} token={token} />
+            </>
+          )}
+
+          <FormularioRecarga token={token} />
+          <PantallaPagosQR token={token} />
+          <FormularioPagoPresencial token={token} />
+
+          <FormularioAperturaCuenta userId={effectiveUserId} token={token} />
+          <FormularioCambioPassword userId={effectiveUserId} token={token} />
+          <PastillaPermisos userId={effectiveUserId} token={token} />
+          <ValidadorCertificado token={token} />
+        </View>
+      )}
     </View>
   );
 }

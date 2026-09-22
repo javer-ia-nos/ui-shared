@@ -54,12 +54,14 @@ export function FormularioCambioPassword({
         valor={passwordActual}
         onCambio={setPasswordActual}
         placeholder="••••••••"
+        esPassword
       />
       <CampoTexto
         etiqueta="Nueva contraseña"
         valor={passwordNueva}
         onCambio={setPasswordNueva}
         placeholder="Mínimo 8 caracteres"
+        esPassword
       />
 
       <BotonBancario

@@ -54,7 +54,7 @@ export function useInversiones(options: UseInversionesOptions = {}) {
     setErrorRendimientos(null);
     try {
       const res = await fetch(
-        `${baseUrl}/rendimientos?usuarioId=${encodeURIComponent(effectiveUsuarioId)}`,
+        `${baseUrl}/financiero/rendimientos?usuarioId=${encodeURIComponent(effectiveUsuarioId)}`,
         { headers: encabezadosAuth(options.token) },
       );
       if (!res.ok) throw new Error(`No fue posible consultar los rendimientos (${res.status})`);
@@ -93,7 +93,7 @@ export function useInversiones(options: UseInversionesOptions = {}) {
     setError(null);
 
     try {
-      const res = await fetch(`${baseUrl}/inversiones`, {
+      const res = await fetch(`${baseUrl}/financiero/inversiones`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...encabezadosAuth(options.token) },
         body: JSON.stringify({

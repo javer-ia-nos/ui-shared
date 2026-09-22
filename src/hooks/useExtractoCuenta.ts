@@ -48,7 +48,7 @@ export function useExtractoCuenta({
     setCargando(true);
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/movimientos/${effectiveAccountId}`, {
+      const res = await fetch(`${baseUrl}/financiero/movimientos/${effectiveAccountId}`, {
         headers: encabezadosAuth(token),
       });
       const body = await res.json().catch(() => ({}));
@@ -74,7 +74,7 @@ export function useExtractoCuenta({
         if (anio !== undefined) params.set("anio", String(anio));
         const query = params.toString();
         const res = await fetch(
-          `${baseUrl}/extractos/${effectiveAccountId}${query ? `?${query}` : ""}`,
+          `${baseUrl}/financiero/extractos/${effectiveAccountId}${query ? `?${query}` : ""}`,
           { headers: encabezadosAuth(token) },
         );
         const body = await res.json().catch(() => ({}));

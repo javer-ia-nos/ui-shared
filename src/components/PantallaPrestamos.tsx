@@ -5,6 +5,7 @@ import { BotonBancario } from "./BotonBancario";
 import { Superficie } from "./Superficie";
 import { Icono } from "./Icono";
 import { PastillaEstado } from "./PastillaEstado";
+import { SelectorCuenta } from "./SelectorCuenta";
 import { usePrestamos, type UsePrestamosOptions, type CuotaPrestamo } from "../hooks/usePrestamos";
 import { formatearMoneda, formatearFecha } from "../utils";
 
@@ -25,9 +26,9 @@ function FilaCuota({
 }) {
   const pagada = cuota.estado === "PAID" || cuota.estado === "PAGADA";
   return (
-    <View className="flex-row items-center justify-between p-3 bg-surface-container rounded-xl border border-outline-variant/30">
-      <View className="flex-1">
-        <View className="flex-row items-center gap-2">
+    <View className="flex-row flex-wrap items-center justify-between gap-3 p-3 bg-surface-container rounded-xl border border-outline-variant/30">
+      <View className="flex-1 min-w-[180px]">
+        <View className="flex-row flex-wrap items-center gap-2">
           <Icono nombre={pagada ? "check_circle" : "event_repeat"} color={pagada ? "#84d896" : "#8591b3"} />
           <Text className="font-title-md text-title-md text-on-surface">Cuota {cuota.numero}</Text>
           <PastillaEstado texto={cuota.estado} tono={pagada ? "secondary" : "neutral"} />
@@ -41,12 +42,14 @@ function FilaCuota({
         </Text>
       </View>
       {!pagada && (
-        <BotonBancario
-          titulo={cargandoCuota === cuota.numero ? "Pagando..." : "Pagar"}
-          variante="secundario"
-          onPress={() => onPagar(cuota.numero)}
-          disabled={cargandoCuota !== null || !cuentaOrigen}
-        />
+        <View className="flex-shrink-0">
+          <BotonBancario
+            titulo={cargandoCuota === cuota.numero ? "Pagando..." : "Pagar"}
+            variante="secundario"
+            onPress={() => onPagar(cuota.numero)}
+            disabled={cargandoCuota !== null || !cuentaOrigen}
+          />
+        </View>
       )}
     </View>
   );
@@ -105,8 +108,8 @@ export function PantallaPrestamos(props: PantallaPrestamosProps) {
 
       {prestamo && (
         <Superficie nivel="container-low" redondeo="2xl" padding="md" className="gap-4">
-          <View className="flex-row items-center justify-between">
-            <Text className="font-title-md text-title-md text-on-surface">{prestamo.mensaje}</Text>
+          <View className="flex-row flex-wrap items-center justify-between gap-2">
+            <Text className="font-title-md text-title-md text-on-surface flex-1 min-w-[140px]">{prestamo.mensaje}</Text>
             <PastillaEstado texto={prestamo.estado} tono="secondary" />
           </View>
           <View className="flex-row gap-4 flex-wrap">
@@ -130,12 +133,10 @@ export function PantallaPrestamos(props: PantallaPrestamosProps) {
             </View>
           </View>
 
-          <CampoTexto
-            etiqueta="Cuenta para pagar cuotas (UUID)"
-            placeholder="00000000-0000-0000-0000-000000000001"
-            valor={cuentaPago}
-            onCambio={setCuentaPago}
-          />
+          <View className="gap-1.5">
+            <Text className="font-body-sm text-body-sm text-on-surface-variant">Cuenta para pagar cuotas</Text>
+            <SelectorCuenta token={props.token} onResuelta={(c) => setCuentaPago(c.id)} />
+          </View>
 
           <Text className="font-title-md text-title-md text-on-surface mt-1">Tabla de amortización</Text>
           <View className="gap-2">

@@ -44,7 +44,7 @@ export function GestionBilleteras({ userId, usuarioId, apiBaseUrl, token }: Gest
 
   return (
     <Superficie nivel="container" redondeo="3xl" padding="lg" className="gap-6 w-full">
-      <View className="flex-row items-center justify-between">
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
         <View className="flex-row items-center gap-2">
           <Icono nombre="smartphone" color="#b5c4ff" />
           <Text className="font-headline-sm text-headline-sm text-on-surface">Billeteras vinculadas (CU-29)</Text>
@@ -74,7 +74,7 @@ export function GestionBilleteras({ userId, usuarioId, apiBaseUrl, token }: Gest
           {billeteras.map((b) => (
             <View
               key={b.id}
-              className="flex-row items-center justify-between p-4 bg-surface-container rounded-2xl border border-outline-variant/30"
+              className="flex-row flex-wrap items-center justify-between gap-3 p-4 bg-surface-container rounded-2xl border border-outline-variant/30"
             >
               <View className="flex-1">
                 <View className="flex-row items-center gap-2">
@@ -99,7 +99,7 @@ export function GestionBilleteras({ userId, usuarioId, apiBaseUrl, token }: Gest
       <Superficie nivel="container-low" redondeo="2xl" padding="md" className="gap-4 mt-2">
         <Text className="font-title-md text-title-md text-on-surface">Vincular una nueva billetera</Text>
 
-        <View className="flex-row gap-2">
+        <View className="flex-row flex-wrap gap-2">
           {OPCIONES_BILLETERA.map((opcion) => (
             <BotonBancario
               key={opcion}

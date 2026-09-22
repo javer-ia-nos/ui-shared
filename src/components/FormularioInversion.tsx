@@ -5,6 +5,7 @@ import { BotonBancario } from "./BotonBancario";
 import { Superficie } from "./Superficie";
 import { Icono } from "./Icono";
 import { PastillaEstado } from "./PastillaEstado";
+import { SelectorCuenta } from "./SelectorCuenta";
 import { useInversiones, type UseInversionesOptions, type Rendimiento } from "../hooks/useInversiones";
 import { formatearMoneda, formatearFecha } from "../utils";
 
@@ -13,7 +14,7 @@ export interface FormularioInversionProps extends UseInversionesOptions {}
 function TarjetaRendimiento({ item }: { item: Rendimiento }) {
   return (
     <View className="p-4 bg-surface-container rounded-2xl border border-outline-variant/30 gap-1">
-      <View className="flex-row items-center justify-between">
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
         <Text className="font-title-md text-title-md text-on-surface">
           {item.tipo === "CDT" ? "CDT" : "Inversión"}
         </Text>
@@ -22,7 +23,7 @@ function TarjetaRendimiento({ item }: { item: Rendimiento }) {
       <Text className="font-body-sm text-body-sm text-on-surface-variant">
         Capital: {formatearMoneda(item.monto)} · Tasa EA: {(item.tasaEA * 100).toFixed(2)}%
       </Text>
-      <View className="flex-row gap-4 mt-1">
+      <View className="flex-row flex-wrap gap-4 mt-1">
         <View>
           <Text className="font-label-sm text-label-sm text-on-surface-variant">Rendimiento actual</Text>
           <Text className="font-title-md text-title-md text-primary">{formatearMoneda(item.actual)}</Text>
@@ -68,7 +69,7 @@ export function FormularioInversion(props: FormularioInversionProps) {
 
   return (
     <Superficie nivel="container" redondeo="3xl" padding="lg" className="gap-4 w-full">
-      <View className="flex-row items-center justify-between">
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
         <View className="flex-row items-center gap-2">
           <Icono nombre="trending_up" color="#b5c4ff" />
           <Text className="font-headline-sm text-headline-sm text-on-surface">Inversiones (CU-12)</Text>
@@ -119,12 +120,10 @@ export function FormularioInversion(props: FormularioInversionProps) {
 
         {!resultado && (
           <>
-            <CampoTexto
-              etiqueta="Cuenta origen (UUID)"
-              placeholder="00000000-0000-0000-0000-000000000001"
-              valor={cuentaOrigen}
-              onCambio={setCuentaOrigen}
-            />
+            <View className="gap-1.5">
+              <Text className="font-body-sm text-body-sm text-on-surface-variant">Cuenta origen</Text>
+              <SelectorCuenta token={props.token} onResuelta={(c) => setCuentaOrigen(c.id)} />
+            </View>
             <CampoTexto
               etiqueta="Código de producto"
               placeholder="FIC-RENTA-FIJA"

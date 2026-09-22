@@ -31,7 +31,7 @@ export function FormularioLogin({ apiBaseUrl, onLogin }: FormularioLoginProps) {
       )}
 
       <CampoTexto etiqueta="Email" valor={email} onCambio={setEmail} placeholder="test@banco.com" />
-      <CampoTexto etiqueta="Contraseña" valor={password} onCambio={setPassword} placeholder="••••••••" />
+      <CampoTexto etiqueta="Contraseña" valor={password} onCambio={setPassword} placeholder="••••••••" esPassword />
 
       <BotonBancario
         titulo={cargando ? "Ingresando..." : "Iniciar sesión"}

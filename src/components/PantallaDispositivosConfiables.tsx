@@ -56,8 +56,8 @@ function TarjetaDispositivo({
 }) {
   const vigente = dispositivo.confianza !== null;
   return (
-    <View className="flex-row items-center justify-between p-4 bg-surface-container rounded-2xl border border-outline-variant/30">
-      <View className="flex-row items-center gap-3 flex-1">
+    <View className="flex-row flex-wrap items-center justify-between gap-3 p-4 bg-surface-container rounded-2xl border border-outline-variant/30">
+      <View className="flex-row items-center gap-3 flex-1 min-w-[180px]">
         <Icono
           nombre={
             dispositivo.plataforma?.toLowerCase().includes("ios")
@@ -122,7 +122,7 @@ export function PantallaDispositivosConfiables({
       padding="lg"
       className="gap-6 w-full"
     >
-      <View className="flex-row items-center justify-between">
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
         <View className="flex-row items-center gap-2">
           <Icono nombre="devices" color="#b5c4ff" />
           <Text className="font-headline-sm text-headline-sm text-on-surface">

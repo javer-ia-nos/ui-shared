@@ -61,7 +61,7 @@ export function FormularioLimites({
       padding="lg"
       className="gap-6 w-full"
     >
-      <View className="flex-row items-center justify-between">
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
         <View className="flex-row items-center gap-2">
           <Icono nombre="tune" color="#b5c4ff" />
           <Text className="font-headline-sm text-headline-sm text-on-surface">
@@ -93,8 +93,8 @@ export function FormularioLimites({
       )}
 
       {limites && (
-        <View className="flex-row gap-4">
-          <View className="flex-1 p-4 bg-surface-container rounded-2xl border border-outline-variant/30">
+        <View className="flex-row flex-wrap gap-4">
+          <View className="flex-1 min-w-[160px] p-4 bg-surface-container rounded-2xl border border-outline-variant/30">
             <Text className="text-on-surface-variant font-label-md text-label-md">
               Límite diario vigente
             </Text>
@@ -102,7 +102,7 @@ export function FormularioLimites({
               {formatearMoneda(limites.limiteDiario)}
             </Text>
           </View>
-          <View className="flex-1 p-4 bg-surface-container rounded-2xl border border-outline-variant/30">
+          <View className="flex-1 min-w-[160px] p-4 bg-surface-container rounded-2xl border border-outline-variant/30">
             <Text className="text-on-surface-variant font-label-md text-label-md">
               Por operación vigente
             </Text>

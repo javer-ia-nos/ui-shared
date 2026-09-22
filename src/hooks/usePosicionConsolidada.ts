@@ -76,7 +76,7 @@ export function usePosicionConsolidada({
     setCargando(true);
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/posicion-consolidada/${effectiveUserId}`, {
+      const res = await fetch(`${baseUrl}/financiero/posicion-consolidada/${effectiveUserId}`, {
         headers: encabezadosAuth(token),
       });
       const body = await res.json().catch(() => ({}));

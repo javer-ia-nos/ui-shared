@@ -4,6 +4,7 @@ import { CampoTexto } from "./CampoTexto";
 import { BotonBancario } from "./BotonBancario";
 import { Superficie } from "./Superficie";
 import { Icono } from "./Icono";
+import { SelectorCuenta } from "./SelectorCuenta";
 import {
   useTransferenciaInternacional,
   type UseTransferenciaInternacionalOptions,
@@ -46,7 +47,7 @@ export function FormularioTransferenciaInternacional({
     <Superficie nivel="container" redondeo="3xl" padding="lg" className="gap-4 max-w-md w-full">
       <View className="flex-row items-center gap-2 mb-2">
         <Icono nombre="public" color="#b5c4ff" />
-        <Text className="font-headline-sm text-headline-sm text-on-surface">
+        <Text className="font-headline-sm text-headline-sm text-on-surface flex-1">
           Transferencia internacional / interbancaria (CU-26)
         </Text>
       </View>
@@ -96,12 +97,7 @@ export function FormularioTransferenciaInternacional({
         </Pressable>
       </View>
 
-      <CampoTexto
-        etiqueta="Cuenta origen (UUID)"
-        placeholder="00000000-0000-0000-0000-000000000001"
-        valor={cuentaOrigen}
-        onCambio={setCuentaOrigen}
-      />
+      <SelectorCuenta etiqueta="Cuenta origen" token={token} onResuelta={(c) => setCuentaOrigen(c.id)} />
       <CampoTexto
         etiqueta="Cuenta destino / IBAN"
         placeholder="DE89370400440532013000"

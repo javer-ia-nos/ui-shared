@@ -29,6 +29,7 @@ const MAPA_SIMBOLOS: Record<NombreSimbolo, keyof typeof MaterialIcons.glyphMap> 
   close: "close",
   computer: "computer",
   content_copy: "content-copy",
+  credit_card: "credit-card",
   delete: "delete",
   description: "description",
   devices: "devices",

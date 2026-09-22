@@ -4,6 +4,7 @@ import { CampoTexto } from "./CampoTexto";
 import { BotonBancario } from "./BotonBancario";
 import { Superficie } from "./Superficie";
 import { Icono } from "./Icono";
+import { SelectorCuenta } from "./SelectorCuenta";
 import { usePagoFactura, type UsePagoFacturaOptions } from "../hooks/usePagoFactura";
 
 export interface FormularioPagoFacturaProps extends UsePagoFacturaOptions {}
@@ -48,12 +49,7 @@ export function FormularioPagoFactura({ cuentaId, apiBaseUrl, token, onSuccess, 
         </View>
       )}
 
-      <CampoTexto
-        etiqueta="Cuenta a debitar (UUID)"
-        placeholder="00000000-0000-0000-0000-000000000001"
-        valor={cuenta}
-        onCambio={setCuentaId}
-      />
+      <SelectorCuenta etiqueta="Cuenta a debitar" token={token} onResuelta={(c) => setCuentaId(c.id)} />
       <CampoTexto
         etiqueta="Código de convenio"
         placeholder="ENEL-001"

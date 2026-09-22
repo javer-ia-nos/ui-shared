@@ -59,8 +59,8 @@ export function GestionCuenta({ cuentaId, tipoCuenta, apiBaseUrl, token }: Gesti
 
   return (
     <Superficie nivel="container" redondeo="3xl" padding="lg" className="gap-6 w-full">
-      <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center gap-2">
+      <View className="flex-row flex-wrap items-center justify-between gap-2">
+        <View className="flex-row items-center gap-2 flex-1 min-w-[160px]">
           <Icono nombre="account_balance" color="#b5c4ff" />
           <Text className="font-headline-sm text-headline-sm text-on-surface">
             Gestionar cuenta {cuenta?.accountNumber ?? ""}
@@ -96,7 +96,7 @@ export function GestionCuenta({ cuentaId, tipoCuenta, apiBaseUrl, token }: Gesti
 
       <Superficie nivel="container-low" redondeo="2xl" padding="md" className="gap-3">
         <Text className="font-title-md text-title-md text-on-surface">Estado de la cuenta</Text>
-        <View className="flex-row gap-2">
+        <View className="flex-row flex-wrap gap-2">
           <BotonBancario
             titulo="Activar"
             variante="secundario"
@@ -148,7 +148,7 @@ export function GestionCuenta({ cuentaId, tipoCuenta, apiBaseUrl, token }: Gesti
             <Text className="font-body-sm text-body-sm text-on-surface-variant">
               Esta acción cancela la cuenta de forma permanente. ¿Confirmas?
             </Text>
-            <View className="flex-row gap-2">
+            <View className="flex-row flex-wrap gap-2">
               <BotonBancario
                 titulo={cargando ? "Cerrando..." : "Sí, cerrar"}
                 variante="peligro"

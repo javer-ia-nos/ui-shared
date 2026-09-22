@@ -9,6 +9,7 @@ export interface CampoTextoProps {
   teclado?: KeyboardTypeOptions;
   error?: string | null;
   accessibilityLabel?: string;
+  esPassword?: boolean;
 }
 
 /**
@@ -23,6 +24,7 @@ export function CampoTexto({
   teclado = "default",
   error,
   accessibilityLabel,
+  esPassword = false,
 }: CampoTextoProps) {
   return (
     <View className="mb-1">
@@ -33,6 +35,8 @@ export function CampoTexto({
         placeholder={placeholder}
         placeholderTextColor="#8e9098"
         keyboardType={teclado}
+        secureTextEntry={esPassword}
+        autoCapitalize={esPassword ? "none" : undefined}
         className={`bg-surface-container-low text-on-surface font-body-md text-body-md rounded-xl px-4 py-3 ${
           error ? "border border-error" : ""
         }`}

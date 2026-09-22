@@ -12,8 +12,8 @@ export interface PantallaExtractoProps extends UseExtractoCuentaOptions {}
 function FilaMovimiento({ mov }: { mov: { id: string; fecha: string; tipo: "CREDITO" | "DEBITO"; monto: number; descripcion: string; saldoPosterior: number } }) {
   const esCredito = mov.tipo === "CREDITO";
   return (
-    <View className="flex-row items-center justify-between p-3 bg-surface-container rounded-xl">
-      <View className="flex-1">
+    <View className="flex-row flex-wrap items-center justify-between gap-2 p-3 bg-surface-container rounded-xl">
+      <View className="flex-1 min-w-[140px]">
         <Text className="font-body-md text-body-md text-on-surface">{mov.descripcion}</Text>
         <Text className="font-body-sm text-body-sm text-on-surface-variant">{formatearFecha(mov.fecha)}</Text>
       </View>
@@ -72,19 +72,19 @@ export function PantallaExtracto(props: PantallaExtractoProps) {
             Extracto {extracto.mes}/{extracto.anio}
           </Text>
           <View className="flex-row flex-wrap gap-3">
-            <View className="flex-1 p-3 bg-surface-container rounded-xl">
+            <View className="flex-1 min-w-[45%] p-3 bg-surface-container rounded-xl">
               <Text className="font-label-sm text-label-sm text-on-surface-variant">Saldo inicial</Text>
               <Text className="font-title-md text-title-md text-on-surface">{formatearMoneda(extracto.saldoInicial)}</Text>
             </View>
-            <View className="flex-1 p-3 bg-surface-container rounded-xl">
+            <View className="flex-1 min-w-[45%] p-3 bg-surface-container rounded-xl">
               <Text className="font-label-sm text-label-sm text-on-surface-variant">Saldo final</Text>
               <Text className="font-title-md text-title-md text-on-surface">{formatearMoneda(extracto.saldoFinal)}</Text>
             </View>
-            <View className="flex-1 p-3 bg-surface-container rounded-xl">
+            <View className="flex-1 min-w-[45%] p-3 bg-surface-container rounded-xl">
               <Text className="font-label-sm text-label-sm text-on-surface-variant">Total créditos</Text>
               <Text className="font-title-md text-title-md text-secondary">{formatearMoneda(extracto.totalCreditos)}</Text>
             </View>
-            <View className="flex-1 p-3 bg-surface-container rounded-xl">
+            <View className="flex-1 min-w-[45%] p-3 bg-surface-container rounded-xl">
               <Text className="font-label-sm text-label-sm text-on-surface-variant">Total débitos</Text>
               <Text className="font-title-md text-title-md text-error">{formatearMoneda(extracto.totalDebitos)}</Text>
             </View>

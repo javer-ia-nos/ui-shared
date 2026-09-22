@@ -46,7 +46,7 @@ export function useBeneficiarios({ userId, usuarioId, apiBaseUrl, token }: UseBe
     setCargando(true);
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/beneficiarios?userId=${effectiveUserId}`, {
+      const res = await fetch(`${baseUrl}/cuentas/beneficiarios?userId=${effectiveUserId}`, {
         headers: encabezadosAuth(token),
       });
       const body = await res.json().catch(() => ({}));
@@ -64,7 +64,7 @@ export function useBeneficiarios({ userId, usuarioId, apiBaseUrl, token }: UseBe
       setCargando(true);
       setError(null);
       try {
-        const res = await fetch(`${baseUrl}/beneficiarios`, {
+        const res = await fetch(`${baseUrl}/cuentas/beneficiarios`, {
           method: "POST",
           headers: { "Content-Type": "application/json", ...encabezadosAuth(token) },
           body: JSON.stringify({ userId: effectiveUserId, ...datos }),
@@ -88,7 +88,7 @@ export function useBeneficiarios({ userId, usuarioId, apiBaseUrl, token }: UseBe
       setCargando(true);
       setError(null);
       try {
-        const res = await fetch(`${baseUrl}/beneficiarios/${id}`, {
+        const res = await fetch(`${baseUrl}/cuentas/beneficiarios/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json", ...encabezadosAuth(token) },
           body: JSON.stringify(cambios),
@@ -112,7 +112,7 @@ export function useBeneficiarios({ userId, usuarioId, apiBaseUrl, token }: UseBe
       setCargando(true);
       setError(null);
       try {
-        const res = await fetch(`${baseUrl}/beneficiarios/${id}`, {
+        const res = await fetch(`${baseUrl}/cuentas/beneficiarios/${id}`, {
           method: "DELETE",
           headers: encabezadosAuth(token),
         });
