@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Platform } from "react-native";
 import { Superficie } from "./Superficie";
 import { Icono } from "./Icono";
 import { CampoTexto } from "./CampoTexto";
@@ -16,18 +16,34 @@ export interface PantallaDispositivosConfiablesProps {
   token?: string;
 }
 
-// Genera (y persiste en localStorage) un fingerprint estable para EL NAVEGADOR
-// desde el que se prueba, imitando lo que en una app real calcularía el cliente.
+// `crypto.randomUUID` no existe en Hermes (React Native) — fallback RFC4122 v4 con Math.random.
+function generarUUID(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+// Genera (y persiste en localStorage cuando existe, i.e. Web) un fingerprint estable
+// para EL DISPOSITIVO desde el que se prueba, imitando lo que en una app real
+// calcularía el cliente. En React Native (sin localStorage) se genera uno por sesión.
 function obtenerFingerprintLocal(): string {
   const clave = "javerianos_device_fingerprint";
+  if (typeof localStorage === "undefined") {
+    return generarUUID();
+  }
   try {
     const existente = localStorage.getItem(clave);
     if (existente) return existente;
-    const nuevo = crypto.randomUUID();
+    const nuevo = generarUUID();
     localStorage.setItem(clave, nuevo);
     return nuevo;
   } catch {
-    return crypto.randomUUID();
+    return generarUUID();
   }
 }
 
@@ -90,8 +106,8 @@ export function PantallaDispositivosConfiables({
       apiBaseUrl,
       token,
     });
-  const [nombre, setNombre] = useState("Navegador de prueba");
-  const [plataforma, setPlataforma] = useState("web");
+  const [nombre, setNombre] = useState(Platform.OS === "web" ? "Navegador" : "Dispositivo móvil");
+  const [plataforma, setPlataforma] = useState<string>(Platform.OS);
   const [fingerprint] = useState(obtenerFingerprintLocal);
 
   useEffect(() => {
