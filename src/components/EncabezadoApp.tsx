@@ -16,6 +16,8 @@ export interface EncabezadoAppProps {
   rolUsuario?: string;
   onNotificaciones?: () => void;
   onCerrarSesion?: () => void;
+  /** Oculta la fila de navegación horizontal (útil en móvil, donde la navegación vive en BarraNavegacionInferior). */
+  mostrarNavegacion?: boolean;
 }
 
 /**
@@ -32,6 +34,7 @@ export function EncabezadoApp({
   rolUsuario,
   onNotificaciones,
   onCerrarSesion,
+  mostrarNavegacion = true,
 }: EncabezadoAppProps) {
   return (
     <View className="bg-surface/90 px-4 py-3 flex-row items-center justify-between gap-4">
@@ -44,28 +47,30 @@ export function EncabezadoApp({
         </View>
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-1 mx-2">
-        <View className="flex-row gap-1">
-          {items.map((item) => {
-            const activo = item.ruta === rutaActiva;
-            return (
-              <Pressable
-                key={item.ruta}
-                onPress={() => onNavegar?.(item.ruta)}
-                className={`px-3 py-2 rounded-lg ${activo ? "bg-primary-container" : ""}`}
-              >
-                <Text
-                  className={`font-body-md text-body-md ${
-                    activo ? "text-primary font-medium" : "text-on-surface-variant"
-                  }`}
+      {mostrarNavegacion && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-1 mx-2">
+          <View className="flex-row gap-1">
+            {items.map((item) => {
+              const activo = item.ruta === rutaActiva;
+              return (
+                <Pressable
+                  key={item.ruta}
+                  onPress={() => onNavegar?.(item.ruta)}
+                  className={`px-3 py-2 rounded-lg ${activo ? "bg-primary-container" : ""}`}
                 >
-                  {item.etiqueta}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-      </ScrollView>
+                  <Text
+                    className={`font-body-md text-body-md ${
+                      activo ? "text-primary font-medium" : "text-on-surface-variant"
+                    }`}
+                  >
+                    {item.etiqueta}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </ScrollView>
+      )}
 
       <View className="flex-row items-center gap-3 flex-shrink-0">
         <Pressable

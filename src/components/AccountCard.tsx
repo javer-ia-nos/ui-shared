@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text } from "react-native";
+import React, { useState } from "react";
+import { View, Text, Pressable } from "react-native";
 import { Superficie } from "./Superficie";
 import { Icono } from "./Icono";
 import { formatearMoneda, enmascararCuenta } from "../utils";
@@ -17,6 +17,8 @@ export interface AccountCardProps {
  * ms-cuentas no expone un monto objetivo por subcuenta, así que no se inventa.
  */
 export function AccountCard({ cuenta, bolsillo }: AccountCardProps) {
+  const [numeroVisible, setNumeroVisible] = useState(false);
+
   if (bolsillo) {
     return (
       <Superficie nivel="container-high" redondeo="2xl" padding="lg" className="gap-2 lg:flex-1 lg:basis-1/3 lg:min-w-[220px]">
@@ -55,9 +57,12 @@ export function AccountCard({ cuenta, bolsillo }: AccountCardProps) {
       </View>
       <View>
         <Text className="font-headline-sm text-body-lg font-semibold text-on-surface">{cuenta.titulo}</Text>
-        <Text className="font-label-code text-label-code text-on-surface-variant">
-          No. {enmascararCuenta(cuenta.numeroCuenta)}
-        </Text>
+        <Pressable onPress={() => setNumeroVisible((v) => !v)} className="flex-row items-center gap-1.5">
+          <Text className="font-label-code text-label-code text-on-surface-variant">
+            No. {numeroVisible ? cuenta.numeroCuenta : enmascararCuenta(cuenta.numeroCuenta)}
+          </Text>
+          <Icono nombre={numeroVisible ? "visibility_off" : "visibility"} tamaño={14} color="#c4c6cf" />
+        </Pressable>
       </View>
       <View>
         <Text className="font-label-caps text-label-caps uppercase text-on-surface-variant mb-1">Saldo Disponible</Text>

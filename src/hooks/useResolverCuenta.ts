@@ -30,7 +30,9 @@ export function useResolverCuenta({ apiBaseUrl, token }: UseResolverCuentaOption
 
   const resolver = useCallback(
     async (numeroCuenta: string): Promise<CuentaResuelta | undefined> => {
-      const numero = numeroCuenta.trim();
+      // Tolera pegar el texto tal como se muestra en la UI ("No. CC-123..."),
+      // en vez de exigir que el usuario borre el prefijo a mano.
+      const numero = numeroCuenta.trim().replace(/^no\.?\s*/i, "");
       if (!numero) {
         setError("Escribe un número de cuenta");
         return;

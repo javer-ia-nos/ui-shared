@@ -10,6 +10,11 @@ export type { NombreSimbolo } from "./simbolos";
 export { Superficie, type SuperficieProps, type NivelSuperficie } from "./Superficie";
 export { PastillaEstado, type PastillaEstadoProps } from "./PastillaEstado";
 export { EncabezadoApp, type EncabezadoAppProps, type ItemNavegacion } from "./EncabezadoApp";
+export {
+  BarraNavegacionInferior,
+  type BarraNavegacionInferiorProps,
+  type ItemNavegacionInferior,
+} from "./BarraNavegacionInferior";
 export { PiePagina } from "./PiePagina";
 export {
   PantallaInicioCuentas,
