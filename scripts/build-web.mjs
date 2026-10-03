@@ -9,6 +9,11 @@ import { plugin } from "bun";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+// OJO: asignar NODE_ENV aquí NO basta: Bun decide el runtime de JSX (jsx vs jsxDEV)
+// con el NODE_ENV que tenía el proceso al arrancar. Por eso el script `build:js:web`
+// de package.json lo exporta antes de invocar bun; sin eso el bundle sale con
+// `jsxDEV`, que en el build de producción de React es `undefined` y rompe la web
+// con "can't access property \"call\", a is undefined".
 process.env.NODE_ENV = "production";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
