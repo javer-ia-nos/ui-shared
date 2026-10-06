@@ -25,6 +25,7 @@ export interface TransferenciaPayload {
   monto: number;
   moneda?: string;
   descripcion?: string;
+  esPropia?: boolean;
 }
 
 export interface ApiResponse<T> {

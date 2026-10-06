@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import { CampoTexto } from "./CampoTexto";
 import { BotonBancario } from "./BotonBancario";
@@ -20,12 +20,21 @@ export function FormularioTransferencia({ apiBaseUrl, token, onSuccess, onError 
     setMonto,
     descripcion,
     setDescripcion,
+    esPropia,
+    setEsPropia,
     cargando,
     error,
     exito,
     ejecutarTransferencia,
     reset,
   } = useTransferencia({ apiBaseUrl, token, onSuccess, onError });
+  const [titularOrigen, setTitularOrigen] = useState<string | undefined>();
+  const [titularDestino, setTitularDestino] = useState<string | undefined>();
+
+  // CU-30: entre cuentas propias si ambas son del mismo titular; si no, a tercero.
+  useEffect(() => {
+    setEsPropia(Boolean(titularOrigen) && titularOrigen === titularDestino);
+  }, [titularOrigen, titularDestino, setEsPropia]);
 
   return (
     <Superficie nivel="container" redondeo="3xl" padding="lg" className="gap-4 max-w-md w-full">
@@ -51,12 +60,29 @@ export function FormularioTransferencia({ apiBaseUrl, token, onSuccess, onError 
 
       <View className="gap-1.5">
         <Text className="font-body-sm text-body-sm text-on-surface-variant">Cuenta origen</Text>
-        <SelectorCuenta token={token} onResuelta={(c) => setCuentaOrigen(c.id)} />
+        <SelectorCuenta
+          token={token}
+          onResuelta={(c) => {
+            setCuentaOrigen(c.id);
+            setTitularOrigen(c.userId);
+          }}
+        />
       </View>
 
       <View className="gap-1.5">
         <Text className="font-body-sm text-body-sm text-on-surface-variant">Cuenta destino</Text>
-        <SelectorCuenta token={token} onResuelta={(c) => setCuentaDestino(c.id)} />
+        <SelectorCuenta
+          token={token}
+          onResuelta={(c) => {
+            setCuentaDestino(c.id);
+            setTitularDestino(c.userId);
+          }}
+        />
+        {cuentaOrigen && cuentaDestino && (
+          <Text className="font-label-code text-label-code text-on-surface-variant">
+            {esPropia ? "Transferencia entre tus cuentas" : "Transferencia a tercero"}
+          </Text>
+        )}
       </View>
 
       <CampoTexto

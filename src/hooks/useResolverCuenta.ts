@@ -3,6 +3,7 @@ import { encabezadosAuth } from "../utils";
 
 export interface CuentaResuelta {
   id: string;
+  userId?: string;
   accountNumber: string;
   balance: number;
   currency: string;

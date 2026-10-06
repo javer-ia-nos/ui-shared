@@ -18,6 +18,7 @@ export function useTransferencia(options: UseTransferenciaOptions = {}) {
   const [cuentaDestino, setCuentaDestino] = useState<string>("");
   const [monto, setMonto] = useState<string>("");
   const [descripcion, setDescripcion] = useState<string>("");
+  const [esPropia, setEsPropia] = useState<boolean>(false);
   const [cargando, setCargando] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [exito, setExito] = useState<boolean>(false);
@@ -54,6 +55,7 @@ export function useTransferencia(options: UseTransferenciaOptions = {}) {
       monto: valorNumerico,
       moneda: "COP",
       descripcion: descripcion || undefined,
+      esPropia,
     };
 
     try {
@@ -80,7 +82,7 @@ export function useTransferencia(options: UseTransferenciaOptions = {}) {
     } finally {
       setCargando(false);
     }
-  }, [cuentaOrigen, cuentaDestino, monto, descripcion, options]);
+  }, [cuentaOrigen, cuentaDestino, monto, descripcion, esPropia, options]);
 
   return {
     cuentaOrigen,
@@ -91,6 +93,8 @@ export function useTransferencia(options: UseTransferenciaOptions = {}) {
     setMonto,
     descripcion,
     setDescripcion,
+    esPropia,
+    setEsPropia,
     cargando,
     error,
     exito,

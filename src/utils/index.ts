@@ -34,8 +34,8 @@ export function validarNumeroCuenta(cuenta: string): boolean {
 /**
  * Ofusca un número de cuenta mostrando solo los últimos 4 dígitos.
  */
-export function enmascararCuenta(cuenta: string): string {
-  const limpia = cuenta.trim();
+export function enmascararCuenta(cuenta?: string | null): string {
+  const limpia = (cuenta ?? "").trim();
   if (limpia.length <= 4) return limpia;
   return `**** ${limpia.slice(-4)}`;
 }
