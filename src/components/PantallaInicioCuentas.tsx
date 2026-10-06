@@ -24,7 +24,10 @@ import { FormularioCambioPassword } from "./FormularioCambioPassword";
 import { PastillaPermisos } from "./PastillaPermisos";
 import { ValidadorCertificado } from "./ValidadorCertificado";
 import { formatearFecha, formatearMoneda } from "../utils";
-import { useInicioCuentas, type UseInicioCuentasOptions } from "../hooks/useInicioCuentas";
+import {
+  useInicioCuentas,
+  type UseInicioCuentasOptions,
+} from "../hooks/useInicioCuentas";
 import type { CuentaResuelta } from "../hooks/useResolverCuenta";
 
 export interface CuentaResumen {
@@ -74,30 +77,58 @@ export interface PantallaInicioCuentasProps extends UseInicioCuentasOptions {
  * existen datos "de ejemplo"). En viewport móvil es un flujo vertical; en
  * `lg:` (desktop) pasa a una retícula tipo Bento Grid.
  */
-export function PantallaInicioCuentas({ onAccionRapida, onVerSeguridad, ...opciones }: PantallaInicioCuentasProps) {
-  const { cuentas, bolsillos, movimientos, certificados, cargando, error, cargar, generarCertificado } =
-    useInicioCuentas(opciones);
+export function PantallaInicioCuentas({
+  onAccionRapida,
+  onVerSeguridad,
+  ...opciones
+}: PantallaInicioCuentasProps) {
+  const {
+    cuentas,
+    bolsillos,
+    movimientos,
+    certificados,
+    cargando,
+    error,
+    cargar,
+    generarCertificado,
+  } = useInicioCuentas(opciones);
 
   useEffect(() => {
     cargar();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [opciones.usuarioId, opciones.userId]);
 
-  const saldoConsolidado = cuentas.reduce((total, cuenta) => total + cuenta.saldoDisponible, 0);
-  const ingresos = movimientos.filter((m) => m.esIngreso).reduce((t, m) => t + m.monto, 0);
-  const egresos = movimientos.filter((m) => !m.esIngreso).reduce((t, m) => t + m.monto, 0);
+  const saldoConsolidado = cuentas.reduce(
+    (total, cuenta) => total + cuenta.saldoDisponible,
+    0,
+  );
+  const ingresos = movimientos
+    .filter((m) => m.esIngreso)
+    .reduce((t, m) => t + m.monto, 0);
+  const egresos = movimientos
+    .filter((m) => !m.esIngreso)
+    .reduce((t, m) => t + m.monto, 0);
   const ahorroActivo = bolsillos.reduce((t, b) => t + b.balance, 0);
 
   return (
     <View className="gap-8 p-4">
       {error && (
-        <Superficie nivel="container" redondeo="2xl" padding="lg" className="bg-error-container">
-          <Text className="text-on-error-container font-body-sm text-body-sm">{error}</Text>
+        <Superficie
+          nivel="container"
+          redondeo="2xl"
+          padding="lg"
+          className="bg-error-container"
+        >
+          <Text className="text-on-error-container font-body-sm text-body-sm">
+            {error}
+          </Text>
         </Superficie>
       )}
 
       {cargando && cuentas.length === 0 && (
-        <Text className="text-on-surface-variant font-body-sm text-body-sm">Cargando cuentas…</Text>
+        <Text className="text-on-surface-variant font-body-sm text-body-sm">
+          Cargando cuentas…
+        </Text>
       )}
 
       {!cargando && cuentas.length === 0 && !error && (
@@ -110,7 +141,12 @@ export function PantallaInicioCuentas({ onAccionRapida, onVerSeguridad, ...opcio
 
       {/* SECCIÓN 1: Hero de balance consolidado + KPIs (spec Stitch) */}
       {cuentas[0] && (
-        <Superficie nivel="container-high" redondeo="2xl" padding="lg" className="gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <Superficie
+          nivel="container-high"
+          redondeo="2xl"
+          padding="lg"
+          className="gap-6 lg:flex-row lg:items-center lg:justify-between"
+        >
           <View className="lg:flex-1">
             <TarjetaSaldo
               numeroCuenta={cuentas[0].numeroCuenta}
@@ -119,20 +155,41 @@ export function PantallaInicioCuentas({ onAccionRapida, onVerSeguridad, ...opcio
             />
           </View>
           <View className="flex-row flex-wrap gap-3 lg:flex-nowrap">
-            <Superficie nivel="container" redondeo="xl" padding="md" className="gap-1 flex-1 min-w-[150px]">
-              <Text className="font-body-sm text-body-sm text-on-surface-variant">Ingresos registrados</Text>
+            <Superficie
+              nivel="container"
+              redondeo="xl"
+              padding="md"
+              className="gap-1 flex-1 min-w-[150px]"
+            >
+              <Text className="font-body-sm text-body-sm text-on-surface-variant">
+                Ingresos registrados
+              </Text>
               <Text className="font-label-numeric-md text-label-numeric-md text-[#10B981] font-semibold">
                 +{formatearMoneda(ingresos)}
               </Text>
             </Superficie>
-            <Superficie nivel="container" redondeo="xl" padding="md" className="gap-1 flex-1 min-w-[150px]">
-              <Text className="font-body-sm text-body-sm text-on-surface-variant">Gastos / Pagos</Text>
+            <Superficie
+              nivel="container"
+              redondeo="xl"
+              padding="md"
+              className="gap-1 flex-1 min-w-[150px]"
+            >
+              <Text className="font-body-sm text-body-sm text-on-surface-variant">
+                Gastos / Pagos
+              </Text>
               <Text className="font-label-numeric-md text-label-numeric-md text-on-surface font-semibold">
                 -{formatearMoneda(egresos)}
               </Text>
             </Superficie>
-            <Superficie nivel="container" redondeo="xl" padding="md" className="gap-1 flex-1 min-w-[150px]">
-              <Text className="font-body-sm text-body-sm text-on-surface-variant">Ahorro Activo</Text>
+            <Superficie
+              nivel="container"
+              redondeo="xl"
+              padding="md"
+              className="gap-1 flex-1 min-w-[150px]"
+            >
+              <Text className="font-body-sm text-body-sm text-on-surface-variant">
+                Ahorro Activo
+              </Text>
               <Text className="font-label-numeric-md text-label-numeric-md text-tertiary font-semibold">
                 {formatearMoneda(ahorroActivo)}
               </Text>
@@ -143,7 +200,10 @@ export function PantallaInicioCuentas({ onAccionRapida, onVerSeguridad, ...opcio
 
       {/* SECCIÓN 2: Accesos rápidos universales */}
       {onAccionRapida && (
-        <QuickActions onAccion={onAccionRapida} certificadoDeshabilitado={cargando || cuentas.length === 0} />
+        <QuickActions
+          onAccion={onAccionRapida}
+          certificadoDeshabilitado={cargando || cuentas.length === 0}
+        />
       )}
 
       {/* SECCIÓN 3: Panel dividido — cuentas + registro de actividad (izq) / seguridad + certificados (der) */}
@@ -151,7 +211,9 @@ export function PantallaInicioCuentas({ onAccionRapida, onVerSeguridad, ...opcio
         <View className="gap-6 lg:flex-1">
           {(cuentas.length > 0 || bolsillos.length > 0) && (
             <View className="gap-4">
-              <Text className="font-headline-md text-headline-md text-on-surface">Cuentas & Bolsillos Activos</Text>
+              <Text className="font-headline-md text-headline-md text-on-surface">
+                Cuentas & Bolsillos Activos
+              </Text>
               <View className="gap-4 lg:flex-row lg:flex-wrap">
                 {cuentas.map((cuenta) => (
                   <AccountCard key={cuenta.id} cuenta={cuenta} />
@@ -163,15 +225,32 @@ export function PantallaInicioCuentas({ onAccionRapida, onVerSeguridad, ...opcio
             </View>
           )}
 
-          {movimientos.length > 0 && (
-            <Superficie nivel="container" redondeo="2xl" padding="lg" className="gap-4">
+          {cuentas.length > 0 && (
+            <Superficie
+              nivel="container"
+              redondeo="2xl"
+              padding="lg"
+              className="gap-4"
+            >
               <View>
-                <Text className="font-headline-md text-headline-md text-on-surface">Movimientos Recientes</Text>
+                <Text className="font-headline-md text-headline-md text-on-surface">
+                  Movimientos Recientes
+                </Text>
                 <Text className="font-body-sm text-body-sm text-on-surface-variant">
                   Registro inmutable de transferencias, recaudos y rendimientos
                 </Text>
               </View>
-              <TransactionLedger movimientos={movimientos} />
+              {movimientos.length > 0 ? (
+                <TransactionLedger movimientos={movimientos} />
+              ) : (
+                <View className="p-4 rounded-xl bg-surface-container-high/40 items-center justify-center">
+                  <Text className="font-body-sm text-body-sm text-on-surface-variant text-center">
+                    {cargando
+                      ? "Cargando movimientos recientes…"
+                      : "No hay movimientos registrados para tus cuentas activas."}
+                  </Text>
+                </View>
+              )}
             </Superficie>
           )}
         </View>
@@ -179,18 +258,28 @@ export function PantallaInicioCuentas({ onAccionRapida, onVerSeguridad, ...opcio
         <View className="gap-4 lg:w-[320px] lg:flex-shrink-0">
           <SecuritySummary {...opciones} onVerMas={onVerSeguridad} />
 
-          <Superficie nivel="container" redondeo="2xl" padding="lg" className="gap-3">
+          <Superficie
+            nivel="container"
+            redondeo="2xl"
+            padding="lg"
+            className="gap-3"
+          >
             <View className="flex-row items-start justify-between">
               <View>
-                <Text className="font-label-caps text-label-caps uppercase text-tertiary">Trámite Institucional</Text>
-                <Text className="font-headline-sm text-headline-sm text-on-surface">Certificación Bancaria</Text>
+                <Text className="font-label-caps text-label-caps uppercase text-tertiary">
+                  Trámite Institucional
+                </Text>
+                <Text className="font-headline-sm text-headline-sm text-on-surface">
+                  Certificación Bancaria
+                </Text>
               </View>
               <View className="p-2.5 rounded-xl bg-tertiary-container">
                 <Icono nombre="picture_as_pdf" color="#ffb955" />
               </View>
             </View>
             <Text className="font-body-sm text-body-sm text-on-surface-variant">
-              Documento oficial con código de verificación, generado contra ms-financiero.
+              Documento oficial con código de verificación, generado contra
+              ms-financiero.
             </Text>
             <BotonBancario
               titulo={cargando ? "Generando…" : "Descargar Certificado Oficial"}
@@ -204,16 +293,30 @@ export function PantallaInicioCuentas({ onAccionRapida, onVerSeguridad, ...opcio
       {/* Certificados ya emitidos (CU-10) */}
       {certificados.length > 0 && (
         <View className="gap-4">
-          <Text className="font-headline-md text-headline-md text-on-surface">Certificaciones & Extractos (CU-10)</Text>
+          <Text className="font-headline-md text-headline-md text-on-surface">
+            Certificaciones & Extractos (CU-10)
+          </Text>
           <View className="gap-4 lg:flex-row lg:flex-wrap">
             {certificados.map((cert) => (
-              <Superficie key={cert.id} nivel="container" redondeo="2xl" padding="lg" className="gap-2 lg:flex-1 lg:min-w-[260px]">
+              <Superficie
+                key={cert.id}
+                nivel="container"
+                redondeo="2xl"
+                padding="lg"
+                className="gap-2 lg:flex-1 lg:min-w-[260px]"
+              >
                 <View className="flex-row flex-wrap items-center justify-between gap-2">
-                  <Text className="font-headline-sm text-headline-sm text-on-surface">{cert.tipoCertificado}</Text>
-                  <PastillaEstado texto={cert.estado} tono={cert.estado === "ACTIVE" ? "secondary" : "neutral"} />
+                  <Text className="font-headline-sm text-headline-sm text-on-surface">
+                    {cert.tipoCertificado}
+                  </Text>
+                  <PastillaEstado
+                    texto={cert.estado}
+                    tono={cert.estado === "ACTIVE" ? "secondary" : "neutral"}
+                  />
                 </View>
                 <Text className="font-label-code text-body-sm text-on-surface-variant">
-                  {cert.codigoVerificacion} · emitido {formatearFecha(cert.fechaEmision)}
+                  {cert.codigoVerificacion} · emitido{" "}
+                  {formatearFecha(cert.fechaEmision)}
                 </Text>
               </Superficie>
             ))}
@@ -221,7 +324,10 @@ export function PantallaInicioCuentas({ onAccionRapida, onVerSeguridad, ...opcio
         </View>
       )}
 
-      <ServiciosAdicionales usuarioId={opciones.userId ?? opciones.usuarioId} token={opciones.token} />
+      <ServiciosAdicionales
+        usuarioId={opciones.userId ?? opciones.usuarioId}
+        token={opciones.token}
+      />
     </View>
   );
 }
@@ -233,7 +339,13 @@ export function PantallaInicioCuentas({ onAccionRapida, onVerSeguridad, ...opcio
  * permisos y validación de certificados) — se mantienen accesibles acá,
  * colapsadas, para no perder cobertura funcional de los CU existentes.
  */
-function ServiciosAdicionales({ usuarioId, token }: { usuarioId?: string; token?: string }) {
+function ServiciosAdicionales({
+  usuarioId,
+  token,
+}: {
+  usuarioId?: string;
+  token?: string;
+}) {
   const [visible, setVisible] = useState(false);
   const [cuenta, setCuenta] = useState<CuentaResuelta | null>(null);
   const effectiveUserId = usuarioId ?? "";
@@ -249,15 +361,26 @@ function ServiciosAdicionales({ usuarioId, token }: { usuarioId?: string; token?
         <View className="gap-6">
           <PantallaPosicionConsolidada userId={effectiveUserId} token={token} />
 
-          <Superficie nivel="container-low" redondeo="2xl" padding="md" className="gap-2">
-            <SelectorCuenta etiqueta="Cuenta para consultar extracto o gestionar" token={token} onResuelta={setCuenta} />
+          <Superficie
+            nivel="container-low"
+            redondeo="2xl"
+            padding="md"
+            className="gap-2"
+          >
+            <SelectorCuenta
+              etiqueta="Cuenta para consultar extracto o gestionar"
+              token={token}
+              onResuelta={setCuenta}
+            />
           </Superficie>
           {cuenta && (
             <>
               <PantallaExtracto cuentaId={cuenta.id} token={token} />
               <GestionCuenta
                 cuentaId={cuenta.id}
-                tipoCuenta={cuenta.accountType === "SAVINGS" ? "AHORROS" : "CORRIENTE"}
+                tipoCuenta={
+                  cuenta.accountType === "SAVINGS" ? "AHORROS" : "CORRIENTE"
+                }
                 token={token}
               />
               <GestionBolsillos cuentaId={cuenta.id} token={token} />

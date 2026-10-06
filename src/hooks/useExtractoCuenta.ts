@@ -48,14 +48,47 @@ export function useExtractoCuenta({
     setCargando(true);
     setError(null);
     try {
-      const res = await fetch(`${baseUrl}/financiero/movimientos/${effectiveAccountId}`, {
-        headers: encabezadosAuth(token),
-      });
+      const res = await fetch(
+        `${baseUrl}/financiero/movimientos/${effectiveAccountId}`,
+        {
+          headers: encabezadosAuth(token),
+        },
+      );
       const body = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(body.message || `No fue posible consultar los movimientos (${res.status})`);
+      let list = (body?.movimientos ?? []) as MovimientoCuenta[];
+
+      // Si ms-financiero no tiene registros contables directos, consultar el libro de transacciones
+      if (list.length === 0) {
+        const txRes = await fetch(
+          `/api/transacciones/transactions?sourceAccountId=${effectiveAccountId}`,
+          { headers: encabezadosAuth(token) },
+        ).catch(() => null);
+
+        if (txRes && txRes.ok) {
+          const txs = await txRes.json().catch(() => []);
+          if (Array.isArray(txs)) {
+            list = txs.map((tx: any) => ({
+              id: tx.id,
+              fecha: tx.occurredAt || new Date().toISOString(),
+              tipo:
+                tx.operationType === "CASH_DEPOSIT" ||
+                tx.operationType === "CHECK_DEPOSIT" ||
+                tx.destinationAccountId === effectiveAccountId
+                  ? "CREDITO"
+                  : "DEBITO",
+              monto: Number(tx.amount ?? 0),
+              descripcion:
+                tx.description ||
+                tx.transactionTypeDescription ||
+                "Transacción",
+              referencia: `REF-${String(tx.id).slice(0, 8).toUpperCase()}`,
+              saldoPosterior: 0,
+            }));
+          }
+        }
       }
-      setMovimientos((body.movimientos ?? []) as MovimientoCuenta[]);
+
+      setMovimientos(list);
     } catch (err: any) {
       setError(err.message || "Error inesperado consultando movimientos");
     } finally {
@@ -73,17 +106,18 @@ export function useExtractoCuenta({
         if (mes !== undefined) params.set("mes", String(mes));
         if (anio !== undefined) params.set("anio", String(anio));
         const query = params.toString();
-        const res = await fetch(
-          `${baseUrl}/financiero/extractos/${effectiveAccountId}${query ? `?${query}` : ""}`,
-          { headers: encabezadosAuth(token) },
-        );
+        const url = `${baseUrl}/financiero/extractos/${effectiveAccountId}${query ? `?${query}` : ""}`;
+        const res = await fetch(url, { headers: encabezadosAuth(token) });
         const body = await res.json().catch(() => ({}));
         if (!res.ok) {
-          throw new Error(body.message || `No fue posible generar el extracto (${res.status})`);
+          throw new Error(
+            body.message ||
+              `No fue posible generar el extracto (${res.status})`,
+          );
         }
         setExtracto(body as ExtractoMensual);
       } catch (err: any) {
-        setError(err.message || "Error inesperado generando el extracto");
+        setError(err.message || "Error inesperado generando extracto");
       } finally {
         setCargando(false);
       }
@@ -91,5 +125,12 @@ export function useExtractoCuenta({
     [effectiveAccountId, baseUrl, token],
   );
 
-  return { movimientos, extracto, cargando, error, cargarMovimientos, cargarExtracto };
+  return {
+    movimientos,
+    extracto,
+    cargando,
+    error,
+    cargarMovimientos,
+    cargarExtracto,
+  };
 }
