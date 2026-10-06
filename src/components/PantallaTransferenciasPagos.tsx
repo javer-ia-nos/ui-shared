@@ -14,12 +14,13 @@ import { DigitalReceiptPreview } from "./DigitalReceiptPreview";
 import type { CuentaResuelta } from "../hooks/useResolverCuenta";
 
 export type DestinoTransferencia = "propias" | "swift";
-type TabHub = "transferencias" | "servicios" | "qr" | "programados";
+export type TabHub = "transferencias" | "servicios" | "qr" | "programados";
 
 export interface PantallaTransferenciasPagosProps {
   userId?: string;
   usuarioId?: string;
   token?: string;
+  tabInicial?: TabHub;
 }
 
 const TABS: Array<{ id: TabHub; etiqueta: string; icono: "sync_alt" | "receipt_long" | "qr_code_2" | "event_repeat" }> = [
@@ -42,9 +43,20 @@ const DESTINOS: Array<{ id: DestinoTransferencia; etiqueta: string; sub: string;
  * "comprobante previsto" (DigitalReceiptPreview) solo aparece tras una
  * operación real exitosa, con los datos que el backend devolvió.
  */
-export function PantallaTransferenciasPagos({ userId, usuarioId, token }: PantallaTransferenciasPagosProps) {
+export function PantallaTransferenciasPagos({ userId, usuarioId, token, tabInicial }: PantallaTransferenciasPagosProps) {
   const effectiveUserId = userId ?? usuarioId ?? "";
-  const [tab, setTab] = useState<TabHub>("transferencias");
+  const [tab, setTab] = useState<TabHub>(() => {
+    if (tabInicial) return tabInicial;
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramTab = urlParams.get("tab") as TabHub;
+      if (paramTab && ["transferencias", "servicios", "qr", "programados"].includes(paramTab)) {
+        return paramTab;
+      }
+      if (window.location.hash === "#qr") return "qr";
+    }
+    return "transferencias";
+  });
   const [destino, setDestino] = useState<DestinoTransferencia>("propias");
   const [cuentaProgramados, setCuentaProgramados] = useState<CuentaResuelta | null>(null);
   const [ultimoComprobante, setUltimoComprobante] = useState<{ titulo: string; datos: Record<string, any> } | null>(

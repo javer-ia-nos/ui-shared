@@ -48,5 +48,9 @@
     "build": "bun run build:js && bun run build:js:web && bun run build:types",
     "test": "bun test",
     "typecheck": "bun x tsc --noEmit"
+  },
+  "dependencies": {
+    "@types/qrcode": "^1.5.6",
+    "qrcode": "^1.5.4"
   }
 }
